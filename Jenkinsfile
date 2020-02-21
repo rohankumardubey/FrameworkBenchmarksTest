@@ -55,7 +55,6 @@ H 4 * * * %BUILD_TYPE=TEST
         stage('Checkout FrameworkBenchmarks') {
 			when {
 				allOf {
-					expression { params.BUILD_TYPE == 'TEST' }
     				branch 'master'
 				}
 			}
