@@ -61,7 +61,7 @@ H 4 * * * %BUILD_TYPE=TEST
 			}
 			steps {
 	        	echo "JAVA_HOME = ${env.JAVA_HOME}"
-				sh "./check_FrameworkBenchmarks.sh"
+				sh "./checkout_FrameworkBenchmarks.sh"
 	        }
         }
 
