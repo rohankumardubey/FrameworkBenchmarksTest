@@ -1,0 +1,8 @@
+sudo: required
+cache:
+  directories: $HOME/.m2
+os: linux
+dist: xenial
+language: java
+jdk: openjdk11
+before_install: ./checkout_FrameworkBenchmarks.sh && ./build_FrameworkBenchmarks.sh
