@@ -51,6 +51,20 @@ H 4 * * * %BUILD_TYPE=TEST
             	error "Aborting ${params.BUILD_TYPE} as not on master branch"
             }
         }
+        
+        stage('Checkout FrameworkBenchmarks') {
+			when {
+				allOf {
+					expression { params.BUILD_TYPE == 'TEST' }
+    				branch 'master'
+				}
+			}
+			steps {
+	        	echo "JAVA_HOME = ${env.JAVA_HOME}"
+				sh "check_FrameworkBenchmarks.sh"
+	        }
+        }
+
 	
 	    stage('Test') {
 			when {
@@ -60,12 +74,13 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 	        steps {
+				sh "build_FrameworkBenchmarks.sh"
 				sh 'mvn clean verify'
 	        }
 		    post {
 			    always {
-					junit allowEmptyResults: true, testResults: 'officefloor/**/target/surefire-reports/TEST-*.xml'
-					junit allowEmptyResults: true, testResults: 'officefloor/**/target/failsafe-reports/TEST-*.xml'
+					junit allowEmptyResults: true, testResults: 'FrameworkBenchmarks/frameworks/Java/officefloor/src/**/target/surefire-reports/TEST-*.xml'
+					junit allowEmptyResults: true, testResults: 'FrameworkBenchmarks/frameworks/Java/officefloor/src/**/target/failsafe-reports/TEST-*.xml'
 			    }
 		    }
 	    } 
@@ -78,8 +93,6 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 			steps {
-	        	sh 'mvn -version'
-	        	echo "JAVA_HOME = ${env.JAVA_HOME}"
 	        	
 	        	echo "TODO fix up run_comparison.sh script"
 				sh './benchmarks/run_comparison.sh'
@@ -102,7 +115,8 @@ ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
    		always {
             script {
    				if (currentBuild.result != 'ABORTED') {
-	    			emailext to: "${RESULTS_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' ${BUILD_STATUS}! (${BRANCH_NAME} ${BUILD_NUMBER})', body: '''
+   					if (params.BUILD_TYPE == 'TEST') {
+		    			emailext to: "${RESULTS_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' ${BUILD_STATUS}! (${BRANCH_NAME} ${BUILD_NUMBER})', body: '''
 ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
 
 Tests:
@@ -122,6 +136,7 @@ Log (last lines):
 ...
 ${BUILD_LOG}
 '''
+					}
 				}
 			}
 		}
