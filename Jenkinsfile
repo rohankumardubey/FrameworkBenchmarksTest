@@ -65,6 +65,17 @@ H 4 * * * %BUILD_TYPE=TEST
 	        }
         }
 
+        stage('Build FrameworkBenchmarks') {
+			when {
+				allOf {
+					expression { params.BUILD_TYPE == 'TEST' }
+    				branch 'master'
+				}
+			}
+			steps {
+				sh "./build_FrameworkBenchmarks.sh"
+	        }
+        }
 	
 	    stage('Test') {
 			when {
@@ -74,7 +85,6 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 	        steps {
-				sh "./build_FrameworkBenchmarks.sh"
 				sh 'mvn clean verify'
 	        }
 		    post {
