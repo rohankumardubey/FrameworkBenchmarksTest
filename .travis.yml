@@ -1,13 +1,10 @@
 sudo: required
 cache:
   directories: $HOME/.m2
-addons:
-  hostname: tfb-database
 os: linux
 dist: xenial
 language: java
 jdk: openjdk11
 before_install:
-  - cat /etc/hosts
   - ./checkout_FrameworkBenchmarks.sh
   - ./build_FrameworkBenchmarks.sh
