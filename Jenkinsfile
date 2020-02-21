@@ -14,7 +14,6 @@ pipeline {
     triggers {
         parameterizedCron('''
 H 4 * * * %BUILD_TYPE=TEST
-H 5 * * * %BUILD_TYPE=PERFORMANCE
 ''')
     }
     
