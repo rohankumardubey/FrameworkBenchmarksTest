@@ -61,11 +61,11 @@ H 4 * * * %BUILD_TYPE=TEST
 			}
 			steps {
 	        	echo "JAVA_HOME = ${env.JAVA_HOME}"
-				sh "./checkout_FrameworkBenchmarks.sh"
+				sh './checkout_FrameworkBenchmarks.sh'
 	        }
         }
 
-        stage('Build FrameworkBenchmarks') {
+        stage('Build FrameworkBenchmarks (OfficeFloor)') {
 			when {
 				allOf {
 					expression { params.BUILD_TYPE == 'TEST' }
@@ -73,7 +73,7 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 			steps {
-				sh "./build_FrameworkBenchmarks.sh"
+				sh './build_FrameworkBenchmarks.sh'
 	        }
         }
 	
@@ -103,15 +103,13 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 			steps {
-	        	
-	        	echo "TODO fix up run_comparison.sh script"
-				sh './benchmarks/run_comparison.sh'
+				sh './run_FrameworkBenchmarks.sh'
 			}
 			post {
 			    always {
 	            	script {
    						if (currentBuild.result != 'ABORTED') {
-							emailext to: "${PERFORMANCE_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' RESULTS (${BUILD_NUMBER})', attachmentsPattern: 'benchmarks/results.txt, benchmarks/results.zip', body: '''
+							emailext to: "${PERFORMANCE_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' RESULTS (${BUILD_NUMBER})', attachmentsPattern: 'results.txt, results.zip', body: '''
 ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
 '''
 						}

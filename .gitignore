@@ -3,3 +3,5 @@
 **/.classpath
 /target/
 /FrameworkBenchmarks
+/results.txt
+/results.zip
