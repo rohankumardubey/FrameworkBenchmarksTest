@@ -26,7 +26,7 @@ import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.asynchttpclient.Dsl;
 import org.asynchttpclient.Response;
 
-import net.officefloor.compile.impl.compile.OfficeFloorJavaCompiler;
+import net.officefloor.compile.classes.OfficeFloorJavaCompiler;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule.Configuration;
 
