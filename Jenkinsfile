@@ -61,7 +61,7 @@ H 4 * * * %BUILD_TYPE=TEST
 			}
 			steps {
 	        	echo "JAVA_HOME = ${env.JAVA_HOME}"
-				sh "check_FrameworkBenchmarks.sh"
+				sh "./check_FrameworkBenchmarks.sh"
 	        }
         }
 
@@ -74,7 +74,7 @@ H 4 * * * %BUILD_TYPE=TEST
 				}
 			}
 	        steps {
-				sh "build_FrameworkBenchmarks.sh"
+				sh "./build_FrameworkBenchmarks.sh"
 				sh 'mvn clean verify'
 	        }
 		    post {
