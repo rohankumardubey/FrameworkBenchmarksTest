@@ -8,6 +8,6 @@ dist: xenial
 language: java
 jdk: openjdk11
 before_install:
-  - cat /et/hosts
+  - cat /etc/hosts
   - ./checkout_FrameworkBenchmarks.sh
   - ./build_FrameworkBenchmarks.sh
