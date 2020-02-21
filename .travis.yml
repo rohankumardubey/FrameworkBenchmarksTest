@@ -6,6 +6,7 @@ dist: xenial
 language: java
 jdk: openjdk11
 before_install: 
-  - echo "127.0.0.1 tfb-datbase" >> /etc/hosts
+  - sudo echo "" >> /etc/hosts
+  - sudo echo "127.0.0.1 tfb-datbase" >> /etc/hosts
   - ./checkout_FrameworkBenchmarks.sh
   - ./build_FrameworkBenchmarks.sh
