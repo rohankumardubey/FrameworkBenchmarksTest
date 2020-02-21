@@ -5,4 +5,7 @@ os: linux
 dist: xenial
 language: java
 jdk: openjdk11
-before_install: ./checkout_FrameworkBenchmarks.sh && ./build_FrameworkBenchmarks.sh
+before_install: 
+  - echo "127.0.0.1 tfb-datbase" >> /etc/hosts
+  - ./checkout_FrameworkBenchmarks.sh
+  - ./build_FrameworkBenchmarks.sh
