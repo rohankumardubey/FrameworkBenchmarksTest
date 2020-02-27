@@ -6,9 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 import net.officefloor.server.http.HttpClientRule;
 import net.officefloor.server.http.HttpServer;
@@ -21,15 +21,16 @@ import net.officefloor.test.OfficeFloorRule;
  */
 public class JsonTest {
 
-	@ClassRule
-	public static SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
-			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181");
+	public final SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
+			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
+			"OFFICE.java_sql_Connection.server", "localhost");
+
+	public final OfficeFloorRule server = new OfficeFloorRule();
+
+	public final HttpClientRule client = new HttpClientRule();
 
 	@Rule
-	public OfficeFloorRule server = new OfficeFloorRule();
-
-	@Rule
-	public HttpClientRule client = new HttpClientRule();
+	public final RuleChain order = RuleChain.outerRule(this.systemProperties).around(this.server).around(this.client);
 
 	protected String getServerName() {
 		return "OF";

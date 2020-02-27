@@ -49,10 +49,10 @@ public class BenchmarkEnvironment {
 	 * @throws Exception If fails to start.
 	 */
 	public static void main(String[] args) throws Exception {
-		
+
 		// Start PostgreSql
 		createPostgreSqlRule().startPostgreSql();
-		
+
 		// Create the tables
 		new DbTest().setupDatabase();
 		new FortunesTest().setupDatabase();
@@ -64,7 +64,7 @@ public class BenchmarkEnvironment {
 	 * @return {@link PostgreSqlRule}.
 	 */
 	public static PostgreSqlRule createPostgreSqlRule() {
-		return new PostgreSqlRule(new Configuration().server("tfb-database").port(5432).database("hello_world")
+		return new PostgreSqlRule(new Configuration().server("localhost").port(5432).database("hello_world")
 				.username("benchmarkdbuser").password("benchmarkdbpass").maxConnections(2000));
 	}
 

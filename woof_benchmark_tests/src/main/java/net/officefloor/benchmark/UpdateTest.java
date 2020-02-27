@@ -16,9 +16,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,22 +35,23 @@ import net.officefloor.test.OfficeFloorRule;
  */
 public class UpdateTest {
 
-	@ClassRule
-	public static PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
+	public final SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
+			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
+			"OFFICE.java_sql_Connection.server", "localhost");
 
-	@ClassRule
-	public static SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
-			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181");
+	public final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
+
+	public final OfficeFloorRule server = new OfficeFloorRule();
+
+	public final HttpClientRule client = new HttpClientRule();
 
 	@Rule
-	public OfficeFloorRule server = new OfficeFloorRule();
-
-	@Rule
-	public HttpClientRule client = new HttpClientRule();
+	public final RuleChain order = RuleChain.outerRule(this.systemProperties).around(this.dataSource)
+			.around(this.server).around(this.client);
 
 	@Before
 	public void setupDatabase() throws Exception {
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = this.dataSource.getConnection()) {
 			try {
 				connection.createStatement().executeQuery("SELECT * FROM World");
 			} catch (SQLException ex) {
@@ -89,7 +90,7 @@ public class UpdateTest {
 		}
 
 		// Ensure database updated to the values
-		try (Connection connection = dataSource.getConnection()) {
+		try (Connection connection = this.dataSource.getConnection()) {
 			PreparedStatement statement = connection
 					.prepareStatement("SELECT ID, RANDOMNUMBER FROM WORLD WHERE ID = ?");
 			for (WorldResponse world : uniqueResponses.values()) {
