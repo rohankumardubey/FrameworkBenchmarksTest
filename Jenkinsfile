@@ -108,7 +108,7 @@ H 4 * * * %BUILD_TYPE=TEST
 			    always {
 	            	script {
    						if (currentBuild.result != 'ABORTED') {
-							emailext to: "${PERFORMANCE_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' RESULTS (${BUILD_NUMBER})', attachmentsPattern: 'results.txt, results.zip', body: '''
+							emailext to: "${PERFORMANCE_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'Benchmark ' + "${params.BUILD_TYPE}" + ' RESULTS (${BUILD_NUMBER})', attachmentsPattern: 'results.txt, results.zip', body: '''
 ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
 '''
 						}
@@ -123,7 +123,7 @@ ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
             script {
    				if (currentBuild.result != 'ABORTED') {
    					if (params.BUILD_TYPE == 'TEST') {
-		    			emailext to: "${RESULTS_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'OF ' + "${params.BUILD_TYPE}" + ' ${BUILD_STATUS}! (${BRANCH_NAME} ${BUILD_NUMBER})', body: '''
+		    			emailext to: "${RESULTS_EMAIL}", replyTo: "${REPLY_TO_EMAIL}", subject: 'Benchmark ' + "${params.BUILD_TYPE}" + ' ${BUILD_STATUS}! (${BUILD_NUMBER})', body: '''
 ${PROJECT_NAME} - ${BUILD_NUMBER} - ${BUILD_STATUS}
 
 Tests:

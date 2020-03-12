@@ -23,11 +23,11 @@ import org.junit.rules.RuleChain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Data;
+import net.officefloor.compile.test.system.SystemPropertiesRule;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.server.http.HttpClientRule;
 import net.officefloor.server.http.HttpServer;
 import net.officefloor.server.http.HttpServerLocation;
-import net.officefloor.server.http.SystemPropertiesRule;
 import net.officefloor.test.OfficeFloorRule;
 
 /**
