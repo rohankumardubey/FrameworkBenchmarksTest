@@ -10,8 +10,8 @@ import java.sql.SQLException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 
@@ -27,23 +27,23 @@ import net.officefloor.test.OfficeFloorRule;
  */
 public class FortunesTest {
 
-	public final SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
-			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
-			"OFFICE.java_sql_Connection.server", "localhost");
+	public static final SystemPropertiesRule systemProperties = new SystemPropertiesRule(
+			HttpServer.PROPERTY_HTTP_SERVER_NAME, "OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true",
+			HttpServerLocation.PROPERTY_HTTP_PORT, "8181", "OFFICE.java_sql_Connection.server", "localhost");
 
-	public final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
+	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
-	public final OfficeFloorRule server = new OfficeFloorRule();
+	public static final OfficeFloorRule server = new OfficeFloorRule();
 
-	public final HttpClientRule client = new HttpClientRule();
+	public static final HttpClientRule client = new HttpClientRule();
 
-	@Rule
-	public final RuleChain order = RuleChain.outerRule(this.systemProperties).around(this.dataSource)
-			.around(this.server).around(this.client);
+	@ClassRule
+	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
+			.around(client);
 
-	@Before
-	public void setupDatabase() throws Exception {
-		try (Connection connection = this.dataSource.getConnection()) {
+	@BeforeClass
+	public static void setupDatabase() throws Exception {
+		try (Connection connection = dataSource.getConnection()) {
 			try {
 				connection.createStatement().executeQuery("SELECT * FROM Fortune");
 			} catch (SQLException ex) {
@@ -77,7 +77,7 @@ public class FortunesTest {
 
 	@Test
 	public void validRequest() throws Exception {
-		HttpResponse response = this.client.execute(new HttpGet("http://localhost:8181/fortunes"));
+		HttpResponse response = client.execute(new HttpGet("http://localhost:8181/fortunes"));
 		String entity = EntityUtils.toString(response.getEntity());
 		assertEquals("Should be successful:\n\n" + entity, 200, response.getStatusLine().getStatusCode());
 		assertEquals("Incorrect content-type", "text/html;charset=utf-8",

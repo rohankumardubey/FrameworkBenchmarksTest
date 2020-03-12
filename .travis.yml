@@ -6,5 +6,6 @@ dist: xenial
 language: java
 jdk: openjdk11
 before_install:
+  - sudo /etc/init.d/postgresql stop
   - ./checkout_FrameworkBenchmarks.sh
   - ./build_FrameworkBenchmarks.sh

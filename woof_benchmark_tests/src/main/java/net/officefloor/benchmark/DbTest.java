@@ -12,8 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 
@@ -32,23 +32,24 @@ import net.officefloor.test.OfficeFloorRule;
  */
 public class DbTest {
 
-	public final SystemPropertiesRule systemProperties = new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME,
-			"OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
-			HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false", "OFFICE.java_sql_Connection.server", "localhost");
+	public static final SystemPropertiesRule systemProperties = new SystemPropertiesRule(
+			HttpServer.PROPERTY_HTTP_SERVER_NAME, "OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true",
+			HttpServerLocation.PROPERTY_HTTP_PORT, "8181", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
+			"OFFICE.java_sql_Connection.server", "localhost");
 
-	public final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
+	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
-	public final OfficeFloorRule server = new OfficeFloorRule();
+	public static final OfficeFloorRule server = new OfficeFloorRule();
 
-	public final HttpClientRule client = new HttpClientRule();
+	public static final HttpClientRule client = new HttpClientRule();
 
-	@Rule
-	public final RuleChain order = RuleChain.outerRule(this.systemProperties).around(this.dataSource)
-			.around(this.server).around(this.client);
+	@ClassRule
+	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
+			.around(client);
 
-	@Before
-	public void setupDatabase() throws Exception {
-		try (Connection connection = this.dataSource.getConnection()) {
+	@BeforeClass
+	public static void setupDatabase() throws Exception {
+		try (Connection connection = dataSource.getConnection()) {
 			try {
 				connection.createStatement().executeQuery("SELECT * FROM World");
 			} catch (SQLException ex) {
@@ -71,7 +72,7 @@ public class DbTest {
 
 	@Test
 	public void validRequest() throws Exception {
-		HttpResponse response = this.client.execute(new HttpGet("http://localhost:8181/db"));
+		HttpResponse response = client.execute(new HttpGet("http://localhost:8181/db"));
 		String entity = EntityUtils.toString(response.getEntity());
 		assertEquals("Should be successful:\n\n" + entity, 200, response.getStatusLine().getStatusCode());
 		assertEquals("Incorrect content-type", "application/json", response.getFirstHeader("content-type").getValue());

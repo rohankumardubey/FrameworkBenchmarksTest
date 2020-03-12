@@ -54,8 +54,8 @@ public class BenchmarkEnvironment {
 		createPostgreSqlRule().startPostgreSql();
 
 		// Create the tables
-		new DbTest().setupDatabase();
-		new FortunesTest().setupDatabase();
+		DbTest.setupDatabase();
+		FortunesTest.setupDatabase();
 	}
 
 	/**
