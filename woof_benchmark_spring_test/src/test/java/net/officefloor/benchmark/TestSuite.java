@@ -17,31 +17,15 @@
  */
 package net.officefloor.benchmark;
 
-import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
-import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 
 /**
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestSuite.SpringJsonTest.class, DbTest.class, QueriesTest.class, FortunesTest.class, UpdateTest.class,
-		TestSuite.SpringPlaintextTest.class })
+@SuiteClasses({ JsonTest.class, DbTest.class, QueriesTest.class, FortunesTest.class, UpdateTest.class,
+		PlaintextTest.class })
 public class TestSuite {
-
-	public static class SpringJsonTest extends JsonTest {
-
-		@ClassRule
-		public static PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
-	}
-
-	public static class SpringPlaintextTest extends PlaintextTest {
-
-		@ClassRule
-		public static PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
-	}
-
 }
