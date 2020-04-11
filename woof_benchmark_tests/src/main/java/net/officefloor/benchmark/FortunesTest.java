@@ -18,8 +18,6 @@ import org.junit.rules.RuleChain;
 import net.officefloor.compile.test.system.SystemPropertiesRule;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.server.http.HttpClientRule;
-import net.officefloor.server.http.HttpServer;
-import net.officefloor.server.http.HttpServerLocation;
 import net.officefloor.test.OfficeFloorRule;
 
 /**
@@ -27,9 +25,7 @@ import net.officefloor.test.OfficeFloorRule;
  */
 public class FortunesTest {
 
-	public static final SystemPropertiesRule systemProperties = new SystemPropertiesRule(
-			HttpServer.PROPERTY_HTTP_SERVER_NAME, "OF", HttpServer.PROPERTY_HTTP_DATE_HEADER, "true",
-			HttpServerLocation.PROPERTY_HTTP_PORT, "8181", "OFFICE.java_sql_Connection.server", "localhost");
+	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
