@@ -21,15 +21,6 @@
 		<module>woof_benchmark_spring_test</module>
 		<module>woof_benchmark_netty_test</module>
 	</modules>
-<!--  
-	<repositories>
-		<repository>
-			<id>maven2-repository.officefloor.net</id>
-			<name>OfficeFloor staging repository for Maven</name>
-			<url>http://www.officefloor.net/maven2/</url>
-		</repository>
-	</repositories>
--->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
