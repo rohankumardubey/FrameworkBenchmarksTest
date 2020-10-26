@@ -27,11 +27,11 @@ import org.asynchttpclient.Dsl;
 import org.asynchttpclient.Response;
 
 import net.officefloor.compile.classes.OfficeFloorJavaCompiler;
-import net.officefloor.compile.test.system.SystemPropertiesRule;
+import net.officefloor.jdbc.postgresql.test.AbstractPostgreSqlJUnit.Configuration;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
-import net.officefloor.jdbc.postgresql.test.PostgreSqlRule.Configuration;
 import net.officefloor.server.http.HttpServer;
 import net.officefloor.server.http.HttpServerLocation;
+import net.officefloor.test.system.SystemPropertiesRule;
 
 /**
  * Provides benchmark environment.

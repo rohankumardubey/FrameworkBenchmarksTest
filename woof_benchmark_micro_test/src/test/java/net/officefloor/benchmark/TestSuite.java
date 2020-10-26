@@ -21,13 +21,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import net.officefloor.benchmark.DbTest;
-import net.officefloor.benchmark.FortunesTest;
-import net.officefloor.benchmark.JsonTest;
-import net.officefloor.benchmark.PlaintextTest;
-import net.officefloor.benchmark.QueriesTest;
-import net.officefloor.benchmark.UpdateTest;
-
 /**
  * Tests.
  */
