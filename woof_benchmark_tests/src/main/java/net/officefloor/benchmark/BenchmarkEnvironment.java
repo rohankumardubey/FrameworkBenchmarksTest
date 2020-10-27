@@ -69,8 +69,8 @@ public class BenchmarkEnvironment {
 	public static SystemPropertiesRule createSystemProperties() {
 		return new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME, "OF",
 				HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
-				HttpServerLocation.PROPERTY_HTTP_PORT, "8181", "OFFICE.java_sql_Connection.server", "localhost",
-				"OFFICE.javax_sql_DataSource.jdbcUrl", "jdbc:postgresql://localhost:5432/hello_world",
+				HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
+				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",
 				"spring.datasource.url", "jdbc:postgresql://localhost:5432/hello_world");
 	}
 
