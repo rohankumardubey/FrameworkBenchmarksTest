@@ -20,10 +20,10 @@ import org.junit.rules.RuleChain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.Data;
-import net.officefloor.compile.test.system.SystemPropertiesRule;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.server.http.HttpClientRule;
 import net.officefloor.test.OfficeFloorRule;
+import net.officefloor.test.system.SystemPropertiesRule;
 
 /**
  * Tests multiple queries.

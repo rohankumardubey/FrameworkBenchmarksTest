@@ -10,10 +10,10 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 
-import net.officefloor.compile.test.system.SystemPropertiesRule;
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.server.http.HttpClientRule;
 import net.officefloor.test.OfficeFloorRule;
+import net.officefloor.test.system.SystemPropertiesRule;
 
 /**
  * Tests the plain text.

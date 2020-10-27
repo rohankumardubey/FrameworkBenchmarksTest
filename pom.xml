@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.officefloor.benchmarks</groupId>
@@ -14,19 +13,31 @@
 	<modules>
 		<module>woof_benchmark_tests</module>
 		<module>woof_benchmark_test</module>
-		<module>woof_benchmark_tpr_test</module>
 		<module>woof_benchmark_micro_test</module>
 		<module>woof_benchmark_thread_affinity_test</module>
 		<module>woof_benchmark_raw_test</module>
 		<module>woof_benchmark_spring_test</module>
 		<module>woof_benchmark_netty_test</module>
+		<module>woof_benchmark_undertow_test</module>
 	</modules>
+	<repositories>
+		<repository>
+			<id>Central first</id>
+			<name>List central first so is used first</name>
+			<url>https://repo.maven.apache.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>maven2-repository.officefloor.net</id>
+			<name>OfficeFloor staging repository for Maven</name>
+			<url>https://github.com/officefloor/maven/raw/repository/</url>
+		</repository>
+	</repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>net.officefloor</groupId>
 				<artifactId>bom</artifactId>
-				<version>3.27.0</version>
+				<version>3.28.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -53,6 +64,11 @@
 			<dependency>
 				<groupId>net.officefloor.benchmarks</groupId>
 				<artifactId>woof_benchmark_netty</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.officefloor.benchmarks</groupId>
+				<artifactId>woof_benchmark_undertow</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
