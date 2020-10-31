@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.officefloor.benchmarks</groupId>
+		<artifactId>benchmarks_test</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>woof_benchmark_shared</artifactId>
+	<description>
+		Provide shared class between tests and framework code.  
+		Reference in framework code must be removed after testing to avoid breaking on PR back to Tech Empower.
+	</description>
+</project>

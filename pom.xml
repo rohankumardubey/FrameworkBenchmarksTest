@@ -11,6 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<modules>
+		<module>woof_benchmark_shared</module>
 		<module>woof_benchmark_tests</module>
 		<module>woof_benchmark_test</module>
 		<module>woof_benchmark_micro_test</module>
@@ -40,6 +41,11 @@
 				<version>3.28.0</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.officefloor.benchmarks</groupId>
+				<artifactId>woof_benchmark_shared</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.officefloor.benchmarks</groupId>

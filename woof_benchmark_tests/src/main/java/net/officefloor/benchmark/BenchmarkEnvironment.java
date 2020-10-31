@@ -85,6 +85,16 @@ public class BenchmarkEnvironment {
 	}
 
 	/**
+	 * Undertakes stress test with similar loads as benchmark validations.
+	 * 
+	 * @param url URL to send requests.
+	 * @throws Exception If fail in stress test.
+	 */
+	public static void doStressTest(String url) throws Exception {
+		doStressTest(url, 512, 10, 10);
+	}
+
+	/**
 	 * <p>
 	 * Undertakes a pipelined stress test.
 	 * <p>
@@ -110,6 +120,7 @@ public class BenchmarkEnvironment {
 			}
 
 			// Run load
+			AsyncHttpClient[] warmupClients = new AsyncHttpClient[] { Dsl.asyncHttpClient(configuration) };
 			AsyncHttpClient[] asyncClients = new AsyncHttpClient[clients];
 			for (int i = 0; i < asyncClients.length; i++) {
 				asyncClients[i] = Dsl.asyncHttpClient(configuration);
@@ -121,13 +132,18 @@ public class BenchmarkEnvironment {
 				System.out.println("STRESS: " + url + " (with " + clients + " clients)");
 
 				// Undertake the warm up
-				doStressRequests(url, iterations / 10, pipelineBatchSize, 'w', asyncClients);
+				WoofBenchmarkShared.counter.set(0);
+				doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients);
+				WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize, "Incorrect number of warm up calls");
 
 				// Capture the start time
 				long startTime = System.currentTimeMillis();
 
 				// Undertake the stress test
+				WoofBenchmarkShared.counter.set(0);
 				doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients);
+				WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
+						"Incorrect number of stress run calls");
 
 				// Capture the completion time
 				long endTime = System.currentTimeMillis();
@@ -143,6 +159,9 @@ public class BenchmarkEnvironment {
 
 			} finally {
 				// Close the clients
+				for (AsyncHttpClient warmupClient : warmupClients) {
+					warmupClient.close();
+				}
 				for (AsyncHttpClient asyncClient : asyncClients) {
 					asyncClient.close();
 				}
