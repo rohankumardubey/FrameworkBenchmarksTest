@@ -100,7 +100,7 @@ public class FortunesTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest("http://localhost:8181/fortunes", 4, 10, 25);
+		BenchmarkEnvironment.doStressTest("http://localhost:8181/fortunes");
 	}
 
 }

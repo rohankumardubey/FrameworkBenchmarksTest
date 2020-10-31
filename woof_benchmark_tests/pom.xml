@@ -11,6 +11,10 @@
 	<artifactId>woof_benchmark_tests</artifactId>
 	<dependencies>
 		<dependency>
+			<groupId>net.officefloor.benchmarks</groupId>
+			<artifactId>woof_benchmark_shared</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>net.officefloor.web</groupId>
 			<artifactId>woof</artifactId>
 		</dependency>

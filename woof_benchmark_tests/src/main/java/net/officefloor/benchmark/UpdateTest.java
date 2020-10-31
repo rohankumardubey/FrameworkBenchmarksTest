@@ -100,7 +100,7 @@ public class UpdateTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest("http://localhost:8181/update?queries=20", 4, 10, 25);
+		BenchmarkEnvironment.doStressTest("http://localhost:8181/update?queries=20");
 	}
 
 	@Data

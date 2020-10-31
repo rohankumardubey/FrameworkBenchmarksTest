@@ -49,7 +49,10 @@ public class PlaintextTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest("http://localhost:8181/plaintext", 4, 10, 250);
+		WoofBenchmarkShared.runWithoutValidation(() -> {
+			BenchmarkEnvironment.doStressTest("http://localhost:8181/plaintext");
+			return null;
+		});
 	}
 
 }
