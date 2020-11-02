@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestSuite.RawJsonTest.class, TestSuite.RawPlaintextTest.class })
+@SuiteClasses({ TestSuite.RawJsonTest.class, TestSuite.RawPlaintextTest.class, TestSuite.RawDbTest.class })
 public class TestSuite {
 
 	public static void start() throws Exception {
@@ -35,7 +35,9 @@ public class TestSuite {
 	}
 
 	public static void stop() throws Exception {
-		RawOfficeFloorMain.socketManager.shutdown();
+		if (RawOfficeFloorMain.socketManager != null) {
+			RawOfficeFloorMain.socketManager.shutdown();
+		}
 	}
 
 	public static class RawJsonTest extends JsonTest {
@@ -51,6 +53,18 @@ public class TestSuite {
 	}
 
 	public static class RawPlaintextTest extends PlaintextTest {
+		@Before
+		public void start() throws Exception {
+			TestSuite.start();
+		}
+
+		@After
+		public void stop() throws Exception {
+			TestSuite.stop();
+		}
+	}
+
+	public static class RawDbTest extends DbTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();

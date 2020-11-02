@@ -91,7 +91,12 @@ public class BenchmarkEnvironment {
 	 * @throws Exception If fail in stress test.
 	 */
 	public static void doStressTest(String url) throws Exception {
-		doStressTest(url, 512, 10, 10);
+
+		// Obtain the number of clients
+		int clients = Integer.parseInt(System.getProperty("stress.clients", "512"));
+
+		// Undertake stress test
+		doStressTest(url, clients, 10, 10);
 	}
 
 	/**
