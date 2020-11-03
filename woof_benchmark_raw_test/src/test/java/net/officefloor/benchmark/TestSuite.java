@@ -88,5 +88,17 @@ public class TestSuite {
 			TestSuite.stop();
 		}
 	}
+	
+	public static class RawFortunesTest extends FortunesTest {
+		@Before
+		public void start() throws Exception {
+			TestSuite.start();
+		}
+
+		@After
+		public void stop() throws Exception {
+			TestSuite.stop();
+		}
+	}
 
 }
