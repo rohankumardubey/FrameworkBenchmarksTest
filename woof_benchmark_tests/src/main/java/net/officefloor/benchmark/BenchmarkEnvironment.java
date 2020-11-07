@@ -71,6 +71,7 @@ public class BenchmarkEnvironment {
 				HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
 				HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
 				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",
+				"OFFICE.net_officefloor_r2dbc_R2dbcManagedObjectSource.host", "localhost",
 				"spring.datasource.url", "jdbc:postgresql://localhost:5432/hello_world");
 	}
 
