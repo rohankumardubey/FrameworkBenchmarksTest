@@ -19,6 +19,10 @@ package net.officefloor.benchmark;
 
 import static org.junit.Assert.assertTrue;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.text.NumberFormat;
 import java.util.concurrent.CompletableFuture;
 
 import org.asynchttpclient.AsyncHttpClient;
@@ -122,11 +126,6 @@ public class BenchmarkEnvironment {
 			DefaultAsyncHttpClientConfig.Builder configuration = new DefaultAsyncHttpClientConfig.Builder()
 					.setConnectTimeout(TIMEOUT).setReadTimeout(TIMEOUT);
 
-			// Undertake warm up
-			try (AsyncHttpClient client = Dsl.asyncHttpClient(configuration)) {
-				doStressRequests(url, iterations / 10, pipelineBatchSize, 'w', new AsyncHttpClient[] { client });
-			}
-
 			// Run load
 			AsyncHttpClient[] warmupClients = new AsyncHttpClient[] { Dsl.asyncHttpClient(configuration) };
 			AsyncHttpClient[] asyncClients = new AsyncHttpClient[clients];
@@ -145,6 +144,9 @@ public class BenchmarkEnvironment {
 				doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients);
 				WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize, "Incorrect number of warm up calls");
 
+				// Log the memory
+				logMemory();
+				
 				// Capture the start time
 				long startTime = System.currentTimeMillis();
 
@@ -156,6 +158,9 @@ public class BenchmarkEnvironment {
 
 				// Capture the completion time
 				long endTime = System.currentTimeMillis();
+
+				// Log the ending memory
+				logMemory();
 
 				// Indicate performance
 				int totalSuccessfulRequests = (clients * iterations * pipelineBatchSize) - overloadCount;
@@ -244,6 +249,48 @@ public class BenchmarkEnvironment {
 
 		// Return the overload count
 		return overloadCount;
+	}
+
+	/**
+	 * Log memory.
+	 */
+	private static void logMemory() {
+
+		// Obtain the memory management bean
+		MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
+		// Obtain the heap diagnosis details
+		MemoryUsage heap = memoryBean.getHeapMemoryUsage();
+		float usedPercentage = (heap.getUsed() / (float) heap.getMax());
+
+		// Print the results
+		NumberFormat format = NumberFormat.getPercentInstance();
+		System.out.println("    HEAP: " + format.format(usedPercentage) + " (used=" + getMemorySize(heap.getUsed())
+				+ ", max=" + getMemorySize(heap.getMax()) + ", init=" + getMemorySize(heap.getInit()) + ", commit="
+				+ getMemorySize(heap.getCommitted()) + ", fq=" + memoryBean.getObjectPendingFinalizationCount() + ")");
+	}
+
+	/**
+	 * Obtains the memory size.
+	 * 
+	 * @param memorySize Memory size.
+	 * @return Formated memory size.
+	 */
+	private static String getMemorySize(long memorySize) {
+
+		final long gigabyteSize = 1 << 30;
+		final long megabyteSize = 1 << 20;
+		final long kilobyteSize = 1 << 10;
+
+		if (memorySize >= gigabyteSize) {
+			return (memorySize / gigabyteSize) + "g";
+		} else if (memorySize >= megabyteSize) {
+			return (memorySize / megabyteSize) + "m";
+		} else if (memorySize >= kilobyteSize) {
+			return (memorySize / kilobyteSize) + "k";
+		} else {
+			return memorySize + "b";
+		}
 	}
 
 }
