@@ -19,6 +19,10 @@ package net.officefloor.benchmark;
 
 import static org.junit.Assert.assertTrue;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.text.NumberFormat;
 import java.util.concurrent.CompletableFuture;
 
 import org.asynchttpclient.AsyncHttpClient;
@@ -71,7 +75,8 @@ public class BenchmarkEnvironment {
 				HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
 				HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
 				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",
-				"spring.datasource.url", "jdbc:postgresql://localhost:5432/hello_world");
+				"OFFICE.net_officefloor_r2dbc_R2dbcManagedObjectSource.host", "localhost", "spring.datasource.url",
+				"jdbc:postgresql://localhost:5432/hello_world");
 	}
 
 	/**
@@ -92,11 +97,13 @@ public class BenchmarkEnvironment {
 	 */
 	public static void doStressTest(String url) throws Exception {
 
-		// Obtain the number of clients
+		// Obtain the default stress details
 		int clients = Integer.parseInt(System.getProperty("stress.clients", "512"));
+		int iterations = Integer.parseInt(System.getProperty("stress.iterations", "10"));
+		int pipelineBatchSize = Integer.parseInt(System.getProperty("stress.pipeline", "10"));
 
 		// Undertake stress test
-		doStressTest(url, clients, 10, 10);
+		doStressTest(url, clients, iterations, pipelineBatchSize);
 	}
 
 	/**
@@ -119,11 +126,6 @@ public class BenchmarkEnvironment {
 			DefaultAsyncHttpClientConfig.Builder configuration = new DefaultAsyncHttpClientConfig.Builder()
 					.setConnectTimeout(TIMEOUT).setReadTimeout(TIMEOUT);
 
-			// Undertake warm up
-			try (AsyncHttpClient client = Dsl.asyncHttpClient(configuration)) {
-				doStressRequests(url, iterations / 10, pipelineBatchSize, 'w', new AsyncHttpClient[] { client });
-			}
-
 			// Run load
 			AsyncHttpClient[] warmupClients = new AsyncHttpClient[] { Dsl.asyncHttpClient(configuration) };
 			AsyncHttpClient[] asyncClients = new AsyncHttpClient[clients];
@@ -134,30 +136,37 @@ public class BenchmarkEnvironment {
 
 				// Indicate test
 				System.out.println();
-				System.out.println("STRESS: " + url + " (with " + clients + " clients)");
+				System.out.println("STRESS: " + url + " (with " + clients + " clients, " + pipelineBatchSize
+						+ " pipeline for " + iterations + " iterations)");
 
 				// Undertake the warm up
 				WoofBenchmarkShared.counter.set(0);
 				doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients);
 				WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize, "Incorrect number of warm up calls");
 
+				// Log the memory
+				logMemory();
+				
 				// Capture the start time
 				long startTime = System.currentTimeMillis();
 
 				// Undertake the stress test
 				WoofBenchmarkShared.counter.set(0);
-				doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients);
+				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients);
 				WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
 						"Incorrect number of stress run calls");
 
 				// Capture the completion time
 				long endTime = System.currentTimeMillis();
 
+				// Log the ending memory
+				logMemory();
+
 				// Indicate performance
-				int totalRequests = clients * iterations * pipelineBatchSize;
+				int totalSuccessfulRequests = (clients * iterations * pipelineBatchSize) - overloadCount;
 				long totalTime = endTime - startTime;
-				int requestsPerSecond = (int) ((totalRequests) / (((float) totalTime) / 1000.0));
-				System.out.println("\tRequests: " + totalRequests);
+				int requestsPerSecond = (int) ((totalSuccessfulRequests) / (((float) totalTime) / 1000.0));
+				System.out.println("\tRequests: " + totalSuccessfulRequests + " (overload: " + overloadCount + ")");
 				System.out.println("\tTime: " + totalTime + " milliseconds");
 				System.out.println("\tReq/Sec: " + requestsPerSecond);
 				System.out.println();
@@ -183,10 +192,11 @@ public class BenchmarkEnvironment {
 	 *                          pipelined together).
 	 * @param progressCharacter Character to print out to indicate progress.
 	 * @param clients           {@link AsyncHttpClient} instances.
+	 * @return Number of overload responses.
 	 * @throws Exception If failure in stress test.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void doStressRequests(String url, int iterations, int pipelineBatchSize, char progressCharacter,
+	private static int doStressRequests(String url, int iterations, int pipelineBatchSize, char progressCharacter,
 			AsyncHttpClient[] clients) throws Exception {
 
 		// Calculate the progress marker
@@ -194,6 +204,9 @@ public class BenchmarkEnvironment {
 		if (progressMarker == 0) {
 			progressMarker = 1;
 		}
+
+		// capture number of overloads
+		int overloadCount = 0;
 
 		// Run the iterations
 		CompletableFuture<Response>[] futures = new CompletableFuture[clients.length * pipelineBatchSize];
@@ -225,11 +238,59 @@ public class BenchmarkEnvironment {
 				int statusCode = response.getStatusCode();
 				assertTrue("Invalid response status code " + statusCode + "\n" + response.getResponseBody(),
 						(statusCode == 200) || (statusCode == 503));
+				if (statusCode == 503) {
+					overloadCount++;
+				}
 			}
 		}
 
 		// End progress output
 		System.out.println();
+
+		// Return the overload count
+		return overloadCount;
+	}
+
+	/**
+	 * Log memory.
+	 */
+	private static void logMemory() {
+
+		// Obtain the memory management bean
+		MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+
+		// Obtain the heap diagnosis details
+		MemoryUsage heap = memoryBean.getHeapMemoryUsage();
+		float usedPercentage = (heap.getUsed() / (float) heap.getMax());
+
+		// Print the results
+		NumberFormat format = NumberFormat.getPercentInstance();
+		System.out.println("    HEAP: " + format.format(usedPercentage) + " (used=" + getMemorySize(heap.getUsed())
+				+ ", max=" + getMemorySize(heap.getMax()) + ", init=" + getMemorySize(heap.getInit()) + ", commit="
+				+ getMemorySize(heap.getCommitted()) + ", fq=" + memoryBean.getObjectPendingFinalizationCount() + ")");
+	}
+
+	/**
+	 * Obtains the memory size.
+	 * 
+	 * @param memorySize Memory size.
+	 * @return Formated memory size.
+	 */
+	private static String getMemorySize(long memorySize) {
+
+		final long gigabyteSize = 1 << 30;
+		final long megabyteSize = 1 << 20;
+		final long kilobyteSize = 1 << 10;
+
+		if (memorySize >= gigabyteSize) {
+			return (memorySize / gigabyteSize) + "g";
+		} else if (memorySize >= megabyteSize) {
+			return (memorySize / megabyteSize) + "m";
+		} else if (memorySize >= kilobyteSize) {
+			return (memorySize / kilobyteSize) + "k";
+		} else {
+			return memorySize + "b";
+		}
 	}
 
 }
