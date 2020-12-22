@@ -17,6 +17,7 @@
  */
 package net.officefloor.benchmark;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.management.ManagementFactory;
@@ -258,7 +259,7 @@ public class BenchmarkEnvironment {
 				assertTrue("Invalid response status code " + statusCode + "\n" + response.getResponseBody(),
 						(statusCode == 200) || (statusCode == 503));
 				if (statusCode == 503) {
-					assertTrue("Overload response on initial validation", isMimicValidate);
+					assertFalse("Overload response on initial validation", isMimicValidate);
 					overloadCount++;
 				}
 			}
