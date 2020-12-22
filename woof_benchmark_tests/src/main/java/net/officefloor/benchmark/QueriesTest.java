@@ -30,6 +30,8 @@ import net.officefloor.test.system.SystemPropertiesRule;
  */
 public class QueriesTest {
 
+	public static final String URL = "http://localhost:8181/queries?queries=";
+
 	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
@@ -91,7 +93,7 @@ public class QueriesTest {
 	}
 
 	private void doTest(String queriesValue, int expectedRows) throws Exception {
-		HttpResponse response = client.execute(new HttpGet("http://localhost:8181/queries?queries=" + queriesValue));
+		HttpResponse response = client.execute(new HttpGet(URL + queriesValue));
 		String entity = EntityUtils.toString(response.getEntity());
 		assertEquals("Should be successful:\n\n" + entity, 200, response.getStatusLine().getStatusCode());
 		assertEquals("Incorrect content-type", "application/json", response.getFirstHeader("content-type").getValue());
@@ -105,8 +107,13 @@ public class QueriesTest {
 	}
 
 	@Test
+	public void validate() throws Exception {
+		BenchmarkEnvironment.doValidateTest(URL + "20");
+	}
+
+	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest("http://localhost:8181/queries?queries=10");
+		BenchmarkEnvironment.doStressTest(URL + "20");
 	}
 
 	@Data

@@ -24,6 +24,8 @@ import net.officefloor.test.system.SystemPropertiesRule;
  * Tests multiple queries.
  */
 public class FortunesTest {
+	
+	public static final String URL = "http://localhost:8181/fortunes";
 
 	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
 
@@ -73,7 +75,7 @@ public class FortunesTest {
 
 	@Test
 	public void validRequest() throws Exception {
-		HttpResponse response = client.execute(new HttpGet("http://localhost:8181/fortunes"));
+		HttpResponse response = client.execute(new HttpGet(URL));
 		String entity = EntityUtils.toString(response.getEntity());
 		assertEquals("Should be successful:\n\n" + entity, 200, response.getStatusLine().getStatusCode());
 		assertEquals("Incorrect content-type", "text/html;charset=utf-8",
@@ -99,8 +101,13 @@ public class FortunesTest {
 	}
 
 	@Test
+	public void validate() throws Exception {
+		BenchmarkEnvironment.doValidateTest(URL);
+	}
+
+	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest("http://localhost:8181/fortunes");
+		BenchmarkEnvironment.doStressTest(URL);
 	}
 
 }

@@ -20,6 +20,8 @@ import net.officefloor.test.system.SystemPropertiesRule;
  */
 public class PlaintextTest {
 
+	public static final String URL = "http://localhost:8181/plaintext";
+
 	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
@@ -38,7 +40,7 @@ public class PlaintextTest {
 
 	@Test
 	public void validRequest() throws Exception {
-		HttpResponse response = client.execute(new HttpGet("http://localhost:8181/plaintext"));
+		HttpResponse response = client.execute(new HttpGet(URL));
 		String entity = EntityUtils.toString(response.getEntity());
 		assertEquals("Should be successful:\n\n" + entity, 200, response.getStatusLine().getStatusCode());
 		assertEquals("Incorrect content-type", "text/plain", response.getFirstHeader("content-type").getValue());
@@ -48,9 +50,17 @@ public class PlaintextTest {
 	}
 
 	@Test
+	public void validate() throws Exception {
+		WoofBenchmarkShared.runWithoutValidation(() -> {
+			BenchmarkEnvironment.doValidateTest(URL);
+			return null;
+		});
+	}
+
+	@Test
 	public void stress() throws Exception {
 		WoofBenchmarkShared.runWithoutValidation(() -> {
-			BenchmarkEnvironment.doStressTest("http://localhost:8181/plaintext");
+			BenchmarkEnvironment.doStressTest(URL);
 			return null;
 		});
 	}

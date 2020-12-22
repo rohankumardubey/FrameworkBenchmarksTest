@@ -90,6 +90,23 @@ public class BenchmarkEnvironment {
 	}
 
 	/**
+	 * Undertakes validate test with similar load as benchmark validations.
+	 * 
+	 * @param url URL to send requests.
+	 * @throws Exception If fail in validate test.
+	 */
+	public static void doValidateTest(String url) throws Exception {
+
+		// Obtain the default validate details
+		int clients = Integer.parseInt(System.getProperty("validate.clients", "512"));
+		int iterations = Integer.parseInt(System.getProperty("validate.iterations", "1"));
+		int pipelineBatchSize = Integer.parseInt(System.getProperty("validate.pipeline", "10"));
+
+		// Undertake validate test
+		doStressTest(url, clients, iterations, pipelineBatchSize, true);
+	}
+
+	/**
 	 * Undertakes stress test with similar loads as benchmark validations.
 	 * 
 	 * @param url URL to send requests.
@@ -103,7 +120,7 @@ public class BenchmarkEnvironment {
 		int pipelineBatchSize = Integer.parseInt(System.getProperty("stress.pipeline", "10"));
 
 		// Undertake stress test
-		doStressTest(url, clients, iterations, pipelineBatchSize);
+		doStressTest(url, clients, iterations, pipelineBatchSize, false);
 	}
 
 	/**
@@ -117,9 +134,11 @@ public class BenchmarkEnvironment {
 	 * @param iterations        Number of iterations.
 	 * @param pipelineBatchSize Pipeline batch size (maximum number of requests
 	 *                          pipelined together).
+	 * @param isMimicValidate   Indicates to mimic validate. No overload responses.
 	 * @throws Exception If failure in stress test.
 	 */
-	public static void doStressTest(String url, int clients, int iterations, int pipelineBatchSize) throws Exception {
+	public static void doStressTest(String url, int clients, int iterations, int pipelineBatchSize,
+			boolean isMimicValidate) throws Exception {
 		OfficeFloorJavaCompiler.runWithoutCompiler(() -> {
 
 			// Create configuration
@@ -140,19 +159,23 @@ public class BenchmarkEnvironment {
 						+ " pipeline for " + iterations + " iterations)");
 
 				// Undertake the warm up
-				WoofBenchmarkShared.counter.set(0);
-				doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients);
-				WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize, "Incorrect number of warm up calls");
+				if (!isMimicValidate) {
+					WoofBenchmarkShared.counter.set(0);
+					doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients, isMimicValidate);
+					WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize,
+							"Incorrect number of warm up calls");
+				}
 
 				// Log the memory
 				logMemory();
-				
+
 				// Capture the start time
 				long startTime = System.currentTimeMillis();
 
 				// Undertake the stress test
 				WoofBenchmarkShared.counter.set(0);
-				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients);
+				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients,
+						isMimicValidate);
 				WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
 						"Incorrect number of stress run calls");
 
@@ -192,18 +215,13 @@ public class BenchmarkEnvironment {
 	 *                          pipelined together).
 	 * @param progressCharacter Character to print out to indicate progress.
 	 * @param clients           {@link AsyncHttpClient} instances.
+	 * @param isMimicValidate   Indicates to mimic validate. No overload responses.
 	 * @return Number of overload responses.
 	 * @throws Exception If failure in stress test.
 	 */
 	@SuppressWarnings("unchecked")
 	private static int doStressRequests(String url, int iterations, int pipelineBatchSize, char progressCharacter,
-			AsyncHttpClient[] clients) throws Exception {
-
-		// Calculate the progress marker
-		int progressMarker = iterations / 10;
-		if (progressMarker == 0) {
-			progressMarker = 1;
-		}
+			AsyncHttpClient[] clients, boolean isMimicValidate) throws Exception {
 
 		// capture number of overloads
 		int overloadCount = 0;
@@ -213,10 +231,8 @@ public class BenchmarkEnvironment {
 		for (int i = 0; i < iterations; i++) {
 
 			// Indicate progress
-			if (i % (progressMarker) == 0) {
-				System.out.print(progressCharacter);
-				System.out.flush();
-			}
+			System.out.print(progressCharacter);
+			System.out.flush();
 
 			// Run the iteration
 			for (int p = 0; p < pipelineBatchSize; p++) {
@@ -239,6 +255,7 @@ public class BenchmarkEnvironment {
 				assertTrue("Invalid response status code " + statusCode + "\n" + response.getResponseBody(),
 						(statusCode == 200) || (statusCode == 503));
 				if (statusCode == 503) {
+					assertTrue("Overload response on initial validation", isMimicValidate);
 					overloadCount++;
 				}
 			}
