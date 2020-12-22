@@ -100,7 +100,7 @@ public class BenchmarkEnvironment {
 		// Obtain the default validate details
 		int clients = Integer.parseInt(System.getProperty("validate.clients", "512"));
 		int iterations = Integer.parseInt(System.getProperty("validate.iterations", "1"));
-		int pipelineBatchSize = Integer.parseInt(System.getProperty("validate.pipeline", "10"));
+		int pipelineBatchSize = Integer.parseInt(System.getProperty("validate.pipeline", "1"));
 
 		// Undertake validate test
 		doStressTest(url, clients, iterations, pipelineBatchSize, true);
