@@ -155,8 +155,11 @@ public class BenchmarkEnvironment {
 
 				// Indicate test
 				System.out.println();
-				System.out.println("STRESS: " + url + " (with " + clients + " clients, " + pipelineBatchSize
-						+ " pipeline for " + iterations + " iterations)");
+				System.out.println((isMimicValidate ? "VALIDATE" : "STRESS") + ": " + url + " (with " + clients
+						+ " clients, " + pipelineBatchSize + " pipeline for " + iterations + " iterations)");
+
+				// Log the memory
+				logMemory();
 
 				// Undertake the warm up
 				if (!isMimicValidate) {
@@ -164,10 +167,10 @@ public class BenchmarkEnvironment {
 					doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients, isMimicValidate);
 					WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize,
 							"Incorrect number of warm up calls");
-				}
 
-				// Log the memory
-				logMemory();
+					// Log the memory
+					logMemory();
+				}
 
 				// Capture the start time
 				long startTime = System.currentTimeMillis();
