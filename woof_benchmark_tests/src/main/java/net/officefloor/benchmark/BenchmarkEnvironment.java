@@ -165,7 +165,7 @@ public class BenchmarkEnvironment {
 				// Undertake the warm up
 				if (!isMimicValidate) {
 					WoofBenchmarkShared.counter.set(0);
-					doStressRequests(url, iterations, pipelineBatchSize, 'w', warmupClients, isMimicValidate);
+					doStressRequests(url, iterations, pipelineBatchSize, "warm up", warmupClients, isMimicValidate);
 					WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize,
 							"Incorrect number of warm up calls");
 
@@ -178,7 +178,7 @@ public class BenchmarkEnvironment {
 
 				// Undertake the stress test
 				WoofBenchmarkShared.counter.set(0);
-				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, '.', asyncClients,
+				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, "iteration", asyncClients,
 						isMimicValidate);
 				WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
 						"Incorrect number of stress run calls");
@@ -217,26 +217,28 @@ public class BenchmarkEnvironment {
 	 * @param iterations        Number of iterations.
 	 * @param pipelineBatchSize Pipeline batch size (maximum number of requests
 	 *                          pipelined together).
-	 * @param progressCharacter Character to print out to indicate progress.
+	 * @param progressPrefix    Prefix to print out to indicate progress.
 	 * @param clients           {@link AsyncHttpClient} instances.
 	 * @param isMimicValidate   Indicates to mimic validate. No overload responses.
 	 * @return Number of overload responses.
 	 * @throws Exception If failure in stress test.
 	 */
 	@SuppressWarnings("unchecked")
-	private static int doStressRequests(String url, int iterations, int pipelineBatchSize, char progressCharacter,
+	private static int doStressRequests(String url, int iterations, int pipelineBatchSize, String progressPrefix,
 			AsyncHttpClient[] clients, boolean isMimicValidate) throws Exception {
 
 		// capture number of overloads
 		int overloadCount = 0;
 
+		// Provide line to show progress
+		System.out.println();
+
 		// Run the iterations
 		CompletableFuture<Response>[] futures = new CompletableFuture[clients.length * pipelineBatchSize];
 		for (int i = 0; i < iterations; i++) {
 
-			// Indicate progress
-			System.out.print(progressCharacter);
-			System.out.flush();
+			// Indicate progress (on same line)
+			System.out.println("\033[F\r " + progressPrefix + " " + (i + 1));
 
 			// Run the iteration
 			for (int p = 0; p < pipelineBatchSize; p++) {
@@ -264,9 +266,6 @@ public class BenchmarkEnvironment {
 			}
 		}
 
-		// End progress output
-		System.out.println();
-		
 		// Ensure no overload in validate
 		if (isMimicValidate) {
 			assertEquals("Should be no overload on initial validation", 0, overloadCount);
