@@ -62,14 +62,43 @@ public class BenchmarkMain {
 	 * 
 	 * @param args Command line arguments.
 	 */
-	private static void test(String[] args) throws Exception {
+	private static void test(String... args) throws Exception {
 
 		// Determine test
 		String test = args.length >= 2 ? args[1].toLowerCase() : "all";
 		switch (test) {
 
+		case "json":
+			new JsonTest().stress();
+			break;
+
+		case "db":
+			new DbTest().stress();
+			break;
+
+		case "queries":
+			new QueriesTest().stress();
+			break;
+
+		case "fortunes":
+			new FortunesTest().stress();
+			break;
+
+		case "update":
+			new UpdateTest().stress();
+			break;
+
 		case "plaintext":
 			new PlaintextTest().stress();
+			break;
+
+		case "all":
+			test("test", "json");
+			test("test", "db");
+			test("test", "queries");
+			test("test", "fortunes");
+			test("test", "update");
+			test("test", "plaintext");
 			break;
 
 		default:

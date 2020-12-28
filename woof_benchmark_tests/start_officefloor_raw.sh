@@ -5,10 +5,11 @@ cd ../../FrameworkBenchmarks/frameworks/Java/officefloor/src/woof_benchmark_raw/
 
 # Start the server
 java \
-	-XX:+FlightRecorder -XX:StartFlightRecording=filename=profile.jfr \
+	-XX:+FlightRecorder -XX:StartFlightRecording=filename=profile.jfr,dumponexit=true \
 	-Xmx2g -Xms2g \
 	-server \
 	-XX:+UseNUMA \
+	-XX:+UseParallelGC \
 	-DOFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server=localhost \
 	-jar woof_benchmark_raw-1.0.0.jar \
 	8181
