@@ -24,7 +24,7 @@ import net.officefloor.test.system.SystemPropertiesRule;
  * Tests multiple queries.
  */
 public class FortunesTest {
-	
+
 	public static final String URL = "http://localhost:8181/fortunes";
 
 	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
@@ -39,33 +39,36 @@ public class FortunesTest {
 	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
 			.around(client);
 
+	public static void setupDatabase(Connection connection) throws Exception {
+		try {
+			connection.createStatement().executeQuery("SELECT * FROM Fortune");
+		} catch (SQLException ex) {
+			connection.createStatement()
+					.executeUpdate("CREATE TABLE Fortune ( id INT PRIMARY KEY, message VARCHAR(100))");
+			PreparedStatement insert = connection.prepareStatement("INSERT INTO Fortune (id, message) VALUES (?, ?)");
+			int id = 1;
+			for (String message : new String[] { "fortune: No such file or directory",
+					"A computer scientist is someone who fixes things that aren't broken.",
+					"After enough decimal places, nobody gives a damn.",
+					"A bad random number generator: 1, 1, 1, 1, 1, 4.33e+67, 1, 1, 1",
+					"A computer program does what you tell it to do, not what you want it to do.",
+					"Emacs is a nice operating system, but I prefer UNIX. — Tom Christaensen",
+					"Any program that runs right is obsolete.",
+					"A list is only as strong as its weakest link. — Donald Knuth", "Feature: A bug with seniority.",
+					"Computers make very fast, very accurate mistakes.",
+					"<script>alert(\"This should not be displayed in a browser alert box.\");</script>",
+					"フレームワークのベンチマーク" }) {
+				insert.setInt(1, id++);
+				insert.setString(2, message);
+				insert.executeUpdate();
+			}
+		}
+	}
+
 	@BeforeClass
 	public static void setupDatabase() throws Exception {
 		try (Connection connection = dataSource.getConnection()) {
-			try {
-				connection.createStatement().executeQuery("SELECT * FROM Fortune");
-			} catch (SQLException ex) {
-				connection.createStatement()
-						.executeUpdate("CREATE TABLE Fortune ( id INT PRIMARY KEY, message VARCHAR(100))");
-				PreparedStatement insert = connection
-						.prepareStatement("INSERT INTO Fortune (id, message) VALUES (?, ?)");
-				int id = 1;
-				for (String message : new String[] { "fortune: No such file or directory",
-						"A computer scientist is someone who fixes things that aren't broken.",
-						"After enough decimal places, nobody gives a damn.",
-						"A bad random number generator: 1, 1, 1, 1, 1, 4.33e+67, 1, 1, 1",
-						"A computer program does what you tell it to do, not what you want it to do.",
-						"Emacs is a nice operating system, but I prefer UNIX. — Tom Christaensen",
-						"Any program that runs right is obsolete.",
-						"A list is only as strong as its weakest link. — Donald Knuth",
-						"Feature: A bug with seniority.", "Computers make very fast, very accurate mistakes.",
-						"<script>alert(\"This should not be displayed in a browser alert box.\");</script>",
-						"フレームワークのベンチマーク" }) {
-					insert.setInt(1, id++);
-					insert.setString(2, message);
-					insert.executeUpdate();
-				}
-			}
+			setupDatabase(connection);
 		}
 	}
 

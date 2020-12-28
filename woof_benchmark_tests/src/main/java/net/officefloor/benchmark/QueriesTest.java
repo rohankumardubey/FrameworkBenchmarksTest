@@ -44,22 +44,25 @@ public class QueriesTest {
 	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
 			.around(client);
 
+	public static void setupDatabase(Connection connection) throws Exception {
+		try {
+			connection.createStatement().executeQuery("SELECT * FROM World");
+		} catch (SQLException ex) {
+			connection.createStatement().executeUpdate("CREATE TABLE World ( id INT PRIMARY KEY, randomNumber INT)");
+			PreparedStatement insert = connection
+					.prepareStatement("INSERT INTO World (id, randomNumber) VALUES (?, ?)");
+			for (int i = 0; i < 10000; i++) {
+				insert.setInt(1, i + 1);
+				insert.setInt(2, ThreadLocalRandom.current().nextInt(1, 10000));
+				insert.executeUpdate();
+			}
+		}
+	}
+
 	@BeforeClass
 	public static void setupDatabase() throws Exception {
 		try (Connection connection = dataSource.getConnection()) {
-			try {
-				connection.createStatement().executeQuery("SELECT * FROM World");
-			} catch (SQLException ex) {
-				connection.createStatement()
-						.executeUpdate("CREATE TABLE World ( id INT PRIMARY KEY, randomNumber INT)");
-				PreparedStatement insert = connection
-						.prepareStatement("INSERT INTO World (id, randomNumber) VALUES (?, ?)");
-				for (int i = 0; i < 10000; i++) {
-					insert.setInt(1, i + 1);
-					insert.setInt(2, ThreadLocalRandom.current().nextInt(1, 10000));
-					insert.executeUpdate();
-				}
-			}
+			setupDatabase(connection);
 		}
 	}
 
