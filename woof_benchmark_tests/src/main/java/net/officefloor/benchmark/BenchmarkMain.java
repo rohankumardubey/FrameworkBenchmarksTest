@@ -91,8 +91,18 @@ public class BenchmarkMain {
 		case "plaintext":
 			new PlaintextTest().stress();
 			break;
+			
+		case "validate":
+			new JsonTest().validate();
+			new DbTest().validate();
+			new QueriesTest().validate();
+			new FortunesTest().validate();
+			new UpdateTest().validate();
+			new PlaintextTest().validate();
+			break;
 
 		case "all":
+			test("test", "validate");
 			test("test", "json");
 			test("test", "db");
 			test("test", "queries");
