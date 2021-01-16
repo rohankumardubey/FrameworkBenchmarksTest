@@ -67,7 +67,7 @@ public class QueriesTest {
 	}
 
 	protected String getServerName() {
-		return "OF";
+		return "O";
 	}
 
 	@Test

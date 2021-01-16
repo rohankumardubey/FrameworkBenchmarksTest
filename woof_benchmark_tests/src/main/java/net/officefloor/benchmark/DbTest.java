@@ -67,7 +67,7 @@ public class DbTest {
 	}
 
 	protected String getServerName() {
-		return "OF";
+		return "O";
 	}
 
 	@Test

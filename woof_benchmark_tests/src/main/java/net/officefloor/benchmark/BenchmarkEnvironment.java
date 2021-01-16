@@ -72,7 +72,7 @@ public class BenchmarkEnvironment {
 	 * @return {@link SystemPropertiesRule} for running testing.
 	 */
 	public static SystemPropertiesRule createSystemProperties() {
-		return new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME, "OF",
+		return new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME, "O",
 				HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
 				HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
 				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",

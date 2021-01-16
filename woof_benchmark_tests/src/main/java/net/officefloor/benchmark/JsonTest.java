@@ -35,7 +35,7 @@ public class JsonTest {
 			.around(client);
 
 	protected String getServerName() {
-		return "OF";
+		return "O";
 	}
 
 	@Test

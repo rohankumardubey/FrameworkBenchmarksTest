@@ -73,7 +73,7 @@ public class FortunesTest {
 	}
 
 	protected String getServerName() {
-		return "OF";
+		return "O";
 	}
 
 	@Test
