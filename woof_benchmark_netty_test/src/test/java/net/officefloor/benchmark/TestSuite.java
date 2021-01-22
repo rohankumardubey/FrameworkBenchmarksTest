@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestSuite.NettyFortunesTest.class, TestSuite.NettyUpdateTest.class, TestSuite.NettyPlaintextTest.class })
 public class TestSuite {
 
-	private static final String SERVER_NAME = "OF Netty";
+	private static final String SERVER_NAME = "O Netty";
 
 	public static class NettyJsonTest extends JsonTest {
 		@Override

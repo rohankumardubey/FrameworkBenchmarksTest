@@ -30,7 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestSuite.UndertowPlaintextTest.class })
 public class TestSuite {
 
-	private static final String SERVER_NAME = "OF Undertow";
+	private static final String SERVER_NAME = "O Undertow";
 
 	public static class UndertowJsonTest extends JsonTest {
 		@Override
