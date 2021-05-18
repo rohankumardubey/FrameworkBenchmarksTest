@@ -21,6 +21,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import net.officefloor.vertx.OfficeFloorVertx;
+
 /**
  * Tests.
  */
@@ -32,9 +34,10 @@ public class TestSuite {
 
 	private static final String SERVER_NAME = "O Vertx";
 
-	public static class VertxJsonTest extends JsonTest {
+	public static class VertxJsonTest extends JsonTest {		
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
@@ -42,6 +45,7 @@ public class TestSuite {
 	public static class VertxDbTest extends DbTest {
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
@@ -49,6 +53,7 @@ public class TestSuite {
 	public static class VertxQueriesTest extends QueriesTest {
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
@@ -56,6 +61,7 @@ public class TestSuite {
 	public static class VertxFortunesTest extends FortunesTest {
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
@@ -63,6 +69,7 @@ public class TestSuite {
 	public static class VertxUpdateTest extends UpdateTest {
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
@@ -70,6 +77,7 @@ public class TestSuite {
 	public static class VertxPlaintextTest extends PlaintextTest {
 		@Override
 		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
 			return SERVER_NAME;
 		}
 	}
