@@ -91,7 +91,7 @@
 			</dependency>
 			<dependency>
 				<groupId>net.officefloor.benchmarks</groupId>
-				<artifactId>woof_benchmark_raw</artifactId>
+				<artifactId>woof_benchmark_r2dbc</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
