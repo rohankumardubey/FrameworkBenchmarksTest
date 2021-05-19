@@ -27,21 +27,21 @@ import org.junit.runners.Suite.SuiteClasses;
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestSuite.RawJsonTest.class, TestSuite.RawPlaintextTest.class, TestSuite.RawDbTest.class,
-		TestSuite.RawQueriesTest.class, TestSuite.RawFortunesTest.class, TestSuite.RawUpdateTest.class })
+@SuiteClasses({ TestSuite.R2dbcJsonTest.class, TestSuite.R2dbcPlaintextTest.class, TestSuite.R2dbcDbTest.class,
+		TestSuite.R2dbcQueriesTest.class, TestSuite.R2dbcFortunesTest.class, TestSuite.R2dbcUpdateTest.class })
 public class TestSuite {
 
 	public static void start() throws Exception {
-		RawOfficeFloorMain.main(new String[] { "8181" });
+		R2dbcOfficeFloorMain.main(new String[] { "8181" });
 	}
 
 	public static void stop() throws Exception {
-		if (RawOfficeFloorMain.socketManager != null) {
-			RawOfficeFloorMain.socketManager.shutdown();
+		if (R2dbcOfficeFloorMain.socketManager != null) {
+			R2dbcOfficeFloorMain.socketManager.shutdown();
 		}
 	}
 
-	public static class RawJsonTest extends JsonTest {
+	public static class R2dbcJsonTest extends JsonTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -53,7 +53,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class RawPlaintextTest extends PlaintextTest {
+	public static class R2dbcPlaintextTest extends PlaintextTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -65,7 +65,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class RawDbTest extends DbTest {
+	public static class R2dbcDbTest extends DbTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -77,7 +77,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class RawQueriesTest extends QueriesTest {
+	public static class R2dbcQueriesTest extends QueriesTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -89,7 +89,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class RawFortunesTest extends FortunesTest {
+	public static class R2dbcFortunesTest extends FortunesTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -101,7 +101,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class RawUpdateTest extends UpdateTest {
+	public static class R2dbcUpdateTest extends UpdateTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
