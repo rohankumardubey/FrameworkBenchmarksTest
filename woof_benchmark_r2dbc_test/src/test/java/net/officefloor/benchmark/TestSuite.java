@@ -36,8 +36,8 @@ public class TestSuite {
 	}
 
 	public static void stop() throws Exception {
-		if (R2dbcOfficeFloorMain.socketManager != null) {
-			R2dbcOfficeFloorMain.socketManager.shutdown();
+		if (RawWoof.socketManager != null) {
+			RawWoof.socketManager.shutdown();
 		}
 	}
 
