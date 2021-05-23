@@ -72,11 +72,11 @@ public class BenchmarkEnvironment {
 	 * @return {@link SystemPropertiesRule} for running testing.
 	 */
 	public static SystemPropertiesRule createSystemProperties() {
-		return new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME, "O",
-				HttpServer.PROPERTY_HTTP_DATE_HEADER, "true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false",
-				HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
+		return new SystemPropertiesRule(HttpServer.PROPERTY_HTTP_SERVER_NAME, "O", HttpServer.PROPERTY_HTTP_DATE_HEADER,
+				"true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
 				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",
-				"OFFICE.net_officefloor_r2dbc_R2dbcManagedObjectSource.host", "localhost", "spring.datasource.url",
+				"OFFICE.net_officefloor_r2dbc_R2dbcManagedObjectSource.host", "localhost",
+				"OFFICE.net_officefloor_vertx_sqlclient_VertxSqlPoolManagedObjectSource.host", "localhost", "spring.datasource.url",
 				"jdbc:postgresql://localhost:5432/hello_world");
 	}
 
