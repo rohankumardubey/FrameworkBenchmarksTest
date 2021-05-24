@@ -17,15 +17,64 @@
  */
 package net.officefloor.benchmark;
 
+import static org.junit.Assert.fail;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import net.officefloor.server.http.HttpClientRule;
 
 /**
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ JsonTest.class, DbTest.class, QueriesTest.class, FortunesTest.class, UpdateTest.class,
-		PlaintextTest.class })
+@SuiteClasses({ JsonTest.class, TestSuite.AsyncDbTest.class, TestSuite.AsyncQueriesTest.class,
+		TestSuite.AsyncFortunesTest.class, TestSuite.AsyncUpdateTest.class, PlaintextTest.class })
 public class TestSuite {
+
+	public static void warmup(HttpClientRule client, String url) throws Exception {
+		HttpResponse response = null;
+		for (int i = 0; i < 10; i++) {
+			response = client.execute(new HttpGet(url));
+			if (response.getStatusLine().getStatusCode() == 200) {
+				return; // warmed up
+			}
+		}
+		String entity = EntityUtils.toString(response.getEntity());
+		fail("Failed to warm up\n\tstatus=" + response.getStatusLine().getStatusCode() + "\n\tentity=" + entity);
+	}
+
+	public static class AsyncDbTest extends DbTest {
+		@Before
+		public void warmup() throws Exception {
+			TestSuite.warmup(client, URL);
+		}
+	}
+
+	public static class AsyncQueriesTest extends QueriesTest {
+		@Before
+		public void warmup() throws Exception {
+			TestSuite.warmup(client, URL + "1");
+		}
+	}
+
+	public static class AsyncFortunesTest extends FortunesTest {
+		@Before
+		public void warmup() throws Exception {
+			TestSuite.warmup(client, URL);
+		}
+	}
+
+	public static class AsyncUpdateTest extends UpdateTest {
+		@Before
+		public void warmup() throws Exception {
+			TestSuite.warmup(client, URL);
+		}
+	}
+
 }
