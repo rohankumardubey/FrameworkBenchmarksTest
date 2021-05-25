@@ -60,7 +60,7 @@ public class PlaintextTest {
 	@Test
 	public void stress() throws Exception {
 		WoofBenchmarkShared.runWithoutValidation(() -> {
-			BenchmarkEnvironment.doStressTest(URL);
+			BenchmarkEnvironment.doPipelineStressTest(URL);
 			return null;
 		});
 	}

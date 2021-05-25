@@ -23,16 +23,19 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import net.officefloor.vertx.OfficeFloorVertx;
+
 /**
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestSuite.R2dbcJsonTest.class, TestSuite.R2dbcPlaintextTest.class, TestSuite.R2dbcDbTest.class,
-		TestSuite.R2dbcQueriesTest.class, TestSuite.R2dbcFortunesTest.class, TestSuite.R2dbcUpdateTest.class })
+@SuiteClasses({ TestSuite.SqlClientJsonTest.class, TestSuite.SqlClientPlaintextTest.class, TestSuite.SqlClientDbTest.class,
+		TestSuite.SqlClientQueriesTest.class, TestSuite.SqlClientFortunesTest.class, TestSuite.SqlClientUpdateTest.class })
 public class TestSuite {
 
 	public static void start() throws Exception {
-		R2dbcOfficeFloorMain.main(new String[] { "8181" });
+		OfficeFloorVertx.setVertx(null); // reset between tests
+		SqlClientOfficeFloorMain.main(new String[] { "8181" });
 	}
 
 	public static void stop() throws Exception {
@@ -41,7 +44,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcJsonTest extends JsonTest {
+	public static class SqlClientJsonTest extends JsonTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -53,7 +56,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcPlaintextTest extends PlaintextTest {
+	public static class SqlClientPlaintextTest extends PlaintextTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -65,7 +68,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcDbTest extends DbTest {
+	public static class SqlClientDbTest extends DbTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -77,7 +80,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcQueriesTest extends QueriesTest {
+	public static class SqlClientQueriesTest extends QueriesTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -89,7 +92,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcFortunesTest extends FortunesTest {
+	public static class SqlClientFortunesTest extends FortunesTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();
@@ -101,7 +104,7 @@ public class TestSuite {
 		}
 	}
 
-	public static class R2dbcUpdateTest extends UpdateTest {
+	public static class SqlClientUpdateTest extends UpdateTest {
 		@Before
 		public void start() throws Exception {
 			TestSuite.start();

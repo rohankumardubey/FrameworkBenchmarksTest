@@ -116,7 +116,7 @@ public class QueriesTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest(URL + "20");
+		BenchmarkEnvironment.doRequestResponseStressTest(URL + "20");
 	}
 
 	@Data
