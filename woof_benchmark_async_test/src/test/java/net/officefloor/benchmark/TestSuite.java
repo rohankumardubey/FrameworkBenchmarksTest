@@ -22,12 +22,14 @@ import static org.junit.Assert.fail;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import net.officefloor.server.http.HttpClientRule;
+import net.officefloor.vertx.OfficeFloorVertx;
 
 /**
  * Tests.
@@ -39,20 +41,31 @@ public class TestSuite {
 
 	public static void warmup(HttpClientRule client, String url) throws Exception {
 		HttpResponse response = null;
+		String entity = null;
 		for (int i = 0; i < 10; i++) {
 			response = client.execute(new HttpGet(url));
+			entity = EntityUtils.toString(response.getEntity());
 			if (response.getStatusLine().getStatusCode() == 200) {
 				return; // warmed up
 			}
 		}
-		String entity = EntityUtils.toString(response.getEntity());
 		fail("Failed to warm up\n\tstatus=" + response.getStatusLine().getStatusCode() + "\n\tentity=" + entity);
+	}
+
+	public static void shutdown() throws Exception {
+		// Reset Vertx
+		OfficeFloorVertx.setVertx(null);
 	}
 
 	public static class AsyncDbTest extends DbTest {
 		@Before
 		public void warmup() throws Exception {
 			TestSuite.warmup(client, URL);
+		}
+
+		@After
+		public void shutdown() throws Exception {
+			TestSuite.shutdown();
 		}
 	}
 
@@ -61,6 +74,11 @@ public class TestSuite {
 		public void warmup() throws Exception {
 			TestSuite.warmup(client, URL + "1");
 		}
+
+		@After
+		public void shutdown() throws Exception {
+			TestSuite.shutdown();
+		}
 	}
 
 	public static class AsyncFortunesTest extends FortunesTest {
@@ -68,12 +86,22 @@ public class TestSuite {
 		public void warmup() throws Exception {
 			TestSuite.warmup(client, URL);
 		}
+
+		@After
+		public void shutdown() throws Exception {
+			TestSuite.shutdown();
+		}
 	}
 
 	public static class AsyncUpdateTest extends UpdateTest {
 		@Before
 		public void warmup() throws Exception {
 			TestSuite.warmup(client, URL);
+		}
+
+		@After
+		public void shutdown() throws Exception {
+			TestSuite.shutdown();
 		}
 	}
 
