@@ -56,7 +56,7 @@ public class JsonTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest(URL);
+		BenchmarkEnvironment.doRequestResponseStressTest(URL);
 	}
 
 }

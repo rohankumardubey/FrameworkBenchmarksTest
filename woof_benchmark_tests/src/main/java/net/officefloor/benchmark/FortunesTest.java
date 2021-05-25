@@ -110,7 +110,7 @@ public class FortunesTest {
 
 	@Test
 	public void stress() throws Exception {
-		BenchmarkEnvironment.doStressTest(URL);
+		BenchmarkEnvironment.doRequestResponseStressTest(URL);
 	}
 
 }

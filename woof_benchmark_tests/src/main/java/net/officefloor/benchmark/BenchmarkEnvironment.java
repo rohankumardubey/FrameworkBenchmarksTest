@@ -76,8 +76,8 @@ public class BenchmarkEnvironment {
 				"true", HttpServer.PROPERTY_INCLUDE_STACK_TRACE, "false", HttpServerLocation.PROPERTY_HTTP_PORT, "8181",
 				"OFFICE.net_officefloor_jdbc_DataSourceManagedObjectSource.server", "localhost",
 				"OFFICE.net_officefloor_r2dbc_R2dbcManagedObjectSource.host", "localhost",
-				"OFFICE.net_officefloor_vertx_sqlclient_VertxSqlPoolManagedObjectSource.host", "localhost", "spring.datasource.url",
-				"jdbc:postgresql://localhost:5432/hello_world");
+				"OFFICE.net_officefloor_vertx_sqlclient_VertxSqlPoolManagedObjectSource.host", "localhost",
+				"spring.datasource.url", "jdbc:postgresql://localhost:5432/hello_world");
 	}
 
 	/**
@@ -108,17 +108,39 @@ public class BenchmarkEnvironment {
 	}
 
 	/**
-	 * Undertakes stress test with similar loads as benchmark validations.
+	 * Undertakes request/response stress test.
 	 * 
 	 * @param url URL to send requests.
 	 * @throws Exception If fail in stress test.
 	 */
-	public static void doStressTest(String url) throws Exception {
+	public static void doRequestResponseStressTest(String url) throws Exception {
+		doStressTest(url, 1); // single request
+	}
+
+	/**
+	 * Undertakes pipeline stress test.
+	 * 
+	 * @param url URL to send requests.
+	 * @throws Exception If fail in stress test.
+	 */
+	public static void doPipelineStressTest(String url) throws Exception {
+		doStressTest(url, 16);
+	}
+
+	/**
+	 * Undertakes stress test with similar loads as benchmark validations.
+	 * 
+	 * @param url                    URL to send requests.
+	 * @param pipelinedRequestsCount Number of pipelined requests.
+	 * @throws Exception If fail in stress test.
+	 */
+	public static void doStressTest(String url, int pipelinedRequestsCount) throws Exception {
 
 		// Obtain the default stress details
 		int clients = Integer.parseInt(System.getProperty("stress.clients", "512"));
 		int iterations = Integer.parseInt(System.getProperty("stress.iterations", "10"));
-		int pipelineBatchSize = Integer.parseInt(System.getProperty("stress.pipeline", "10"));
+		int pipelineBatchSize = Integer
+				.parseInt(System.getProperty("stress.pipeline", String.valueOf(pipelinedRequestsCount)));
 
 		// Undertake stress test
 		doStressTest(url, clients, iterations, pipelineBatchSize, false);
@@ -128,7 +150,7 @@ public class BenchmarkEnvironment {
 	 * <p>
 	 * Undertakes a pipelined stress test.
 	 * <p>
-	 * This is similar requesting as per the Tech Empower benchmarks.
+	 * This is similar requesting as per the Tech Empower benchmarkos.
 	 * 
 	 * @param url               URL to send requests.
 	 * @param clients           Number of clients.
