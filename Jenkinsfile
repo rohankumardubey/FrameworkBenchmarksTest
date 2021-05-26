@@ -25,7 +25,7 @@ H 3 * * 1 %BUILD_TYPE=TEST
 
 	tools {
 	    maven 'maven-3.6.0'
-	    jdk 'jdk11'
+	    jdk 'jdk15'
 	}
 	
 	stages {
@@ -84,7 +84,7 @@ H 3 * * 1 %BUILD_TYPE=TEST
 				}
 			}
 	        steps {
-				sh 'mvn clean verify'
+				sh 'mvn clean install'
 	        }
 		    post {
 			    always {
