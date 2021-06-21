@@ -28,10 +28,11 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ TestSuite.R2dbcJsonTest.class, TestSuite.R2dbcPlaintextTest.class, TestSuite.R2dbcDbTest.class,
-		TestSuite.R2dbcQueriesTest.class, TestSuite.R2dbcFortunesTest.class, TestSuite.R2dbcUpdateTest.class })
+		TestSuite.R2dbcQueriesTest.class, TestSuite.R2dbcCachedTest.class, TestSuite.R2dbcFortunesTest.class,
+		TestSuite.R2dbcUpdateTest.class })
 public class TestSuite {
 
-	public static void start() throws Exception {
+	public static void start() throws Throwable {
 		R2dbcOfficeFloorMain.main(new String[] { "8181" });
 	}
 
@@ -43,7 +44,7 @@ public class TestSuite {
 
 	public static class R2dbcJsonTest extends JsonTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -55,7 +56,7 @@ public class TestSuite {
 
 	public static class R2dbcPlaintextTest extends PlaintextTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -67,7 +68,7 @@ public class TestSuite {
 
 	public static class R2dbcDbTest extends DbTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -79,7 +80,19 @@ public class TestSuite {
 
 	public static class R2dbcQueriesTest extends QueriesTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
+			TestSuite.start();
+		}
+
+		@After
+		public void stop() throws Exception {
+			TestSuite.stop();
+		}
+	}
+
+	public static class R2dbcCachedTest extends CachedTest {
+		@Before
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -91,7 +104,7 @@ public class TestSuite {
 
 	public static class R2dbcFortunesTest extends FortunesTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -103,7 +116,7 @@ public class TestSuite {
 
 	public static class R2dbcUpdateTest extends UpdateTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 

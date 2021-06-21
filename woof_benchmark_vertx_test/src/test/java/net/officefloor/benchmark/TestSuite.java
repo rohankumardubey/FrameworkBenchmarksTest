@@ -28,13 +28,13 @@ import net.officefloor.vertx.OfficeFloorVertx;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ TestSuite.VertxJsonTest.class, TestSuite.VertxDbTest.class, TestSuite.VertxQueriesTest.class,
-		TestSuite.VertxFortunesTest.class, TestSuite.VertxUpdateTest.class,
+		TestSuite.VertxCachedTest.class, TestSuite.VertxFortunesTest.class, TestSuite.VertxUpdateTest.class,
 		TestSuite.VertxPlaintextTest.class })
 public class TestSuite {
 
 	private static final String SERVER_NAME = "O Vertx";
 
-	public static class VertxJsonTest extends JsonTest {		
+	public static class VertxJsonTest extends JsonTest {
 		@Override
 		protected String getServerName() {
 			OfficeFloorVertx.setVertx(null);
@@ -51,6 +51,14 @@ public class TestSuite {
 	}
 
 	public static class VertxQueriesTest extends QueriesTest {
+		@Override
+		protected String getServerName() {
+			OfficeFloorVertx.setVertx(null);
+			return SERVER_NAME;
+		}
+	}
+
+	public static class VertxCachedTest extends CachedTest {
 		@Override
 		protected String getServerName() {
 			OfficeFloorVertx.setVertx(null);

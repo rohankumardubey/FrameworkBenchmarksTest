@@ -26,7 +26,8 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ TestSuite.NettyJsonTest.class, TestSuite.NettyDbTest.class, TestSuite.NettyQueriesTest.class,
-		TestSuite.NettyFortunesTest.class, TestSuite.NettyUpdateTest.class, TestSuite.NettyPlaintextTest.class })
+		TestSuite.NettyCachedTest.class, TestSuite.NettyFortunesTest.class, TestSuite.NettyUpdateTest.class,
+		TestSuite.NettyPlaintextTest.class })
 public class TestSuite {
 
 	private static final String SERVER_NAME = "O Netty";
@@ -46,6 +47,13 @@ public class TestSuite {
 	}
 
 	public static class NettyQueriesTest extends QueriesTest {
+		@Override
+		protected String getServerName() {
+			return SERVER_NAME;
+		}
+	}
+
+	public static class NettyCachedTest extends CachedTest {
 		@Override
 		protected String getServerName() {
 			return SERVER_NAME;

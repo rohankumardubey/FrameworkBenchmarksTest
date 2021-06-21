@@ -29,11 +29,12 @@ import net.officefloor.vertx.OfficeFloorVertx;
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ TestSuite.SqlClientJsonTest.class, TestSuite.SqlClientPlaintextTest.class, TestSuite.SqlClientDbTest.class,
-		TestSuite.SqlClientQueriesTest.class, TestSuite.SqlClientFortunesTest.class, TestSuite.SqlClientUpdateTest.class })
+@SuiteClasses({ TestSuite.SqlClientJsonTest.class, TestSuite.SqlClientPlaintextTest.class,
+		TestSuite.SqlClientDbTest.class, TestSuite.SqlClientQueriesTest.class, TestSuite.SqlClientFortunesTest.class,
+		TestSuite.SqlClientUpdateTest.class })
 public class TestSuite {
 
-	public static void start() throws Exception {
+	public static void start() throws Throwable {
 		OfficeFloorVertx.setVertx(null); // reset between tests
 		SqlClientOfficeFloorMain.main(new String[] { "8181" });
 	}
@@ -46,7 +47,7 @@ public class TestSuite {
 
 	public static class SqlClientJsonTest extends JsonTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -58,7 +59,7 @@ public class TestSuite {
 
 	public static class SqlClientPlaintextTest extends PlaintextTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -70,7 +71,7 @@ public class TestSuite {
 
 	public static class SqlClientDbTest extends DbTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -82,7 +83,7 @@ public class TestSuite {
 
 	public static class SqlClientQueriesTest extends QueriesTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -94,7 +95,7 @@ public class TestSuite {
 
 	public static class SqlClientFortunesTest extends FortunesTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
@@ -106,7 +107,7 @@ public class TestSuite {
 
 	public static class SqlClientUpdateTest extends UpdateTest {
 		@Before
-		public void start() throws Exception {
+		public void start() throws Throwable {
 			TestSuite.start();
 		}
 
