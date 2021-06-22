@@ -105,7 +105,7 @@ public class TestSuite {
 	public static class R2dbcFortunesTest extends FortunesTest {
 
 		public R2dbcFortunesTest() {
-			super(true);
+			this.isGuavaEscaping = true;
 		}
 
 		@Before

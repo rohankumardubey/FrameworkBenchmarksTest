@@ -42,15 +42,7 @@ public class FortunesTest {
 	/**
 	 * Indicates if using Google Guava HTML escaping.
 	 */
-	private final boolean isGuavaEscaping;
-
-	public FortunesTest() {
-		this(false);
-	}
-
-	public FortunesTest(boolean isGuavaEscaping) {
-		this.isGuavaEscaping = isGuavaEscaping;
-	}
+	protected boolean isGuavaEscaping = false;
 
 	public static void setupDatabase(Connection connection) throws Exception {
 		try {

@@ -96,7 +96,7 @@ public class TestSuite {
 	public static class SqlClientFortunesTest extends FortunesTest {
 		
 		public SqlClientFortunesTest() {
-			super(true);
+			this.isGuavaEscaping = true;
 		}
 		
 		@Before
