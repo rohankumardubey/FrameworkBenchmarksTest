@@ -50,12 +50,12 @@ public class CachedTest {
 					// Setup the database (must be done before starting OfficeFloor)
 					try (Connection connection = dataSource.getConnection()) {
 						try {
-							connection.createStatement().executeQuery("SELECT * FROM CachedWorld");
+							connection.createStatement().executeQuery("SELECT * FROM World");
 						} catch (SQLException ex) {
 							connection.createStatement()
-									.executeUpdate("CREATE TABLE CachedWorld ( id INT PRIMARY KEY, randomNumber INT)");
+									.executeUpdate("CREATE TABLE World ( id INT PRIMARY KEY, randomNumber INT)");
 							PreparedStatement insert = connection
-									.prepareStatement("INSERT INTO CachedWorld (id, randomNumber) VALUES (?, ?)");
+									.prepareStatement("INSERT INTO World (id, randomNumber) VALUES (?, ?)");
 							for (int i = 0; i < 10000; i++) {
 								insert.setInt(1, i + 1);
 								insert.setInt(2, ThreadLocalRandom.current().nextInt(1, 10000));
