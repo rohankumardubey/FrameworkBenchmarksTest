@@ -3,14 +3,9 @@ package net.officefloor.benchmark;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -31,51 +26,22 @@ public class FortunesTest {
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
+	public static final SetupWorldTableRule setupWorldTable = new SetupWorldTableRule(dataSource);
+
+	public static final SetupFortuneTableRule setupFortuneTable = new SetupFortuneTableRule(dataSource);
+
 	public static final OfficeFloorRule server = new OfficeFloorRule();
 
 	public static final HttpClientRule client = new HttpClientRule();
 
 	@ClassRule
-	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
-			.around(client);
+	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource)
+			.around(setupWorldTable).around(setupFortuneTable).around(server).around(client);
 
 	/**
 	 * Indicates if using Google Guava HTML escaping.
 	 */
 	protected boolean isGuavaEscaping = false;
-
-	public static void setupDatabase(Connection connection) throws Exception {
-		try {
-			connection.createStatement().executeQuery("SELECT * FROM Fortune");
-		} catch (SQLException ex) {
-			connection.createStatement()
-					.executeUpdate("CREATE TABLE Fortune ( id INT PRIMARY KEY, message VARCHAR(100))");
-			PreparedStatement insert = connection.prepareStatement("INSERT INTO Fortune (id, message) VALUES (?, ?)");
-			int id = 1;
-			for (String message : new String[] { "fortune: No such file or directory",
-					"A computer scientist is someone who fixes things that aren't broken.",
-					"After enough decimal places, nobody gives a damn.",
-					"A bad random number generator: 1, 1, 1, 1, 1, 4.33e+67, 1, 1, 1",
-					"A computer program does what you tell it to do, not what you want it to do.",
-					"Emacs is a nice operating system, but I prefer UNIX. — Tom Christaensen",
-					"Any program that runs right is obsolete.",
-					"A list is only as strong as its weakest link. — Donald Knuth", "Feature: A bug with seniority.",
-					"Computers make very fast, very accurate mistakes.",
-					"<script>alert(\"This should not be displayed in a browser alert box.\");</script>",
-					"フレームワークのベンチマーク" }) {
-				insert.setInt(1, id++);
-				insert.setString(2, message);
-				insert.executeUpdate();
-			}
-		}
-	}
-
-	@BeforeClass
-	public static void setupDatabase() throws Exception {
-		try (Connection connection = dataSource.getConnection()) {
-			setupDatabase(connection);
-		}
-	}
 
 	protected String getServerName() {
 		return "O";

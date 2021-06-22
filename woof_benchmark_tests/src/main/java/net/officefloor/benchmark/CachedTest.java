@@ -4,20 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,46 +30,15 @@ public class CachedTest {
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
-	public static final TestRule setupDatabase = new TestRule() {
-
-		@Override
-		public Statement apply(Statement base, Description description) {
-			return new Statement() {
-
-				@Override
-				public void evaluate() throws Throwable {
-
-					// Setup the database (must be done before starting OfficeFloor)
-					try (Connection connection = dataSource.getConnection()) {
-						try {
-							connection.createStatement().executeQuery("SELECT * FROM World");
-						} catch (SQLException ex) {
-							connection.createStatement()
-									.executeUpdate("CREATE TABLE World ( id INT PRIMARY KEY, randomNumber INT)");
-							PreparedStatement insert = connection
-									.prepareStatement("INSERT INTO World (id, randomNumber) VALUES (?, ?)");
-							for (int i = 0; i < 10000; i++) {
-								insert.setInt(1, i + 1);
-								insert.setInt(2, ThreadLocalRandom.current().nextInt(1, 10000));
-								insert.executeUpdate();
-							}
-						}
-					}
-
-					// Continue evaluation
-					base.evaluate();
-				}
-			};
-		}
-	};
+	public static final SetupWorldTableRule setupWorldTable = new SetupWorldTableRule(dataSource);
 
 	public static final OfficeFloorRule server = new OfficeFloorRule();
 
 	public static final HttpClientRule client = new HttpClientRule();
 
 	@ClassRule
-	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(setupDatabase)
-			.around(server).around(client);
+	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource)
+			.around(setupWorldTable).around(server).around(client);
 
 	protected String getServerName() {
 		return "O";

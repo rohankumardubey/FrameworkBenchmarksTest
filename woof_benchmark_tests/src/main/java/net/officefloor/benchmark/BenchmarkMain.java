@@ -1,7 +1,5 @@
 package net.officefloor.benchmark;
 
-import java.sql.Connection;
-
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 
 /**
@@ -48,13 +46,9 @@ public class BenchmarkMain {
 		PostgreSqlRule rule = BenchmarkEnvironment.createPostgreSqlRule();
 		rule.startPostgreSql();
 
-		// Run setup of the database
-		try (Connection connection = rule.getConnection()) {
-			DbTest.setupDatabase(connection);
-			QueriesTest.setupDatabase(connection);
-			UpdateTest.setupDatabase(connection);
-			FortunesTest.setupDatabase(connection);
-		}
+		// Run setup of the tables
+		new SetupWorldTableRule(rule).setupWorldTable();
+		new SetupFortuneTableRule(rule).setupFortuneTable();
 	}
 
 	/**
@@ -91,7 +85,7 @@ public class BenchmarkMain {
 		case "plaintext":
 			new PlaintextTest().stress();
 			break;
-			
+
 		case "validate":
 			new JsonTest().validate();
 			new DbTest().validate();

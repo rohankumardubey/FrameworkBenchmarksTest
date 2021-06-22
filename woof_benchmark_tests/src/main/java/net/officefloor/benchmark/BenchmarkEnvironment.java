@@ -36,6 +36,7 @@ import net.officefloor.jdbc.postgresql.test.AbstractPostgreSqlJUnit.Configuratio
 import net.officefloor.jdbc.postgresql.test.PostgreSqlRule;
 import net.officefloor.server.http.HttpServer;
 import net.officefloor.server.http.HttpServerLocation;
+import net.officefloor.test.JUnitAgnosticAssert;
 import net.officefloor.test.system.SystemPropertiesRule;
 
 /**
@@ -59,10 +60,11 @@ public class BenchmarkEnvironment {
 	public static void main(String[] args) throws Exception {
 
 		// Start PostgreSql
-		createPostgreSqlRule().startPostgreSql();
+		PostgreSqlRule postgresqlRule = createPostgreSqlRule();
+		postgresqlRule.startPostgreSql();
 
 		// Create the tables
-		DbTest.setupDatabase();
+		new SetupWorldTableRule(postgresqlRule).setupWorldTable();
 		FortunesTest.setupDatabase();
 	}
 
@@ -162,74 +164,99 @@ public class BenchmarkEnvironment {
 	 */
 	public static void doStressTest(String url, int clients, int iterations, int pipelineBatchSize,
 			boolean isMimicValidate) throws Exception {
-		OfficeFloorJavaCompiler.runWithoutCompiler(() -> {
 
-			// Create configuration
-			DefaultAsyncHttpClientConfig.Builder configuration = new DefaultAsyncHttpClientConfig.Builder()
-					.setConnectTimeout(TIMEOUT).setReadTimeout(TIMEOUT);
+		// Allow validate to run twice (to be more resilient to start up issues)
+		int attempts = isMimicValidate ? 2 : 1;
+		Throwable[] lastFailure = new Throwable[] { null };
+		for (int attempt = 0; attempt < attempts; attempt++) {
 
-			// Run load
-			AsyncHttpClient[] warmupClients = new AsyncHttpClient[] { Dsl.asyncHttpClient(configuration) };
-			AsyncHttpClient[] asyncClients = new AsyncHttpClient[clients];
-			for (int i = 0; i < asyncClients.length; i++) {
-				asyncClients[i] = Dsl.asyncHttpClient(configuration);
-			}
-			try {
+			// Undertake stress testing
+			final int finalAttempt = attempt;
+			boolean[] isSuccessful = new boolean[] { false };
+			OfficeFloorJavaCompiler.runWithoutCompiler(() -> {
 
-				// Indicate test
-				System.out.println();
-				System.out.println((isMimicValidate ? "VALIDATE" : "STRESS") + ": " + url + " (with " + clients
-						+ " clients, " + pipelineBatchSize + " pipeline for " + iterations + " iterations)");
+				// Create configuration
+				DefaultAsyncHttpClientConfig.Builder configuration = new DefaultAsyncHttpClientConfig.Builder()
+						.setConnectTimeout(TIMEOUT).setReadTimeout(TIMEOUT);
 
-				// Log the memory
-				logMemory();
+				// Run load
+				AsyncHttpClient[] warmupClients = new AsyncHttpClient[] { Dsl.asyncHttpClient(configuration) };
+				AsyncHttpClient[] asyncClients = new AsyncHttpClient[clients];
+				for (int i = 0; i < asyncClients.length; i++) {
+					asyncClients[i] = Dsl.asyncHttpClient(configuration);
+				}
+				try {
 
-				// Undertake the warm up
-				if (!isMimicValidate) {
-					WoofBenchmarkShared.counter.set(0);
-					doStressRequests(url, iterations, pipelineBatchSize, "warm up", warmupClients, isMimicValidate);
-					WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize,
-							"Incorrect number of warm up calls");
+					// Indicate test
+					System.out.println();
+					System.out.println((isMimicValidate ? "VALIDATE (attempt " + (finalAttempt + 1) + ")" : "STRESS")
+							+ ": " + url + " (with " + clients + " clients, " + pipelineBatchSize + " pipeline for "
+							+ iterations + " iterations)");
 
 					// Log the memory
 					logMemory();
+
+					// Undertake the warm up
+					if (!isMimicValidate) {
+						WoofBenchmarkShared.counter.set(0);
+						doStressRequests(url, iterations, pipelineBatchSize, "warm up", warmupClients, isMimicValidate);
+						WoofBenchmarkShared.assertCounter(iterations * pipelineBatchSize,
+								"Incorrect number of warm up calls");
+
+						// Log the memory
+						logMemory();
+					}
+
+					// Capture the start time
+					long startTime = System.currentTimeMillis();
+
+					// Undertake the stress test
+					WoofBenchmarkShared.counter.set(0);
+					int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, "iteration", asyncClients,
+							isMimicValidate);
+					WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
+							"Incorrect number of stress run calls");
+
+					// Capture the completion time
+					long endTime = System.currentTimeMillis();
+
+					// Log the ending memory
+					logMemory();
+
+					// Indicate performance
+					int totalSuccessfulRequests = (clients * iterations * pipelineBatchSize) - overloadCount;
+					long totalTime = endTime - startTime;
+					int requestsPerSecond = (int) ((totalSuccessfulRequests) / (((float) totalTime) / 1000.0));
+					System.out.println("\tRequests: " + totalSuccessfulRequests + " (overload: " + overloadCount + ")");
+					System.out.println("\tTime: " + totalTime + " milliseconds");
+					System.out.println("\tReq/Sec: " + requestsPerSecond);
+					System.out.println();
+
+					// As here successful
+					isSuccessful[0] = true;
+
+				} catch (Throwable failure) {
+					lastFailure[0] = failure;
+
+				} finally {
+					// Close the clients
+					for (AsyncHttpClient warmupClient : warmupClients) {
+						warmupClient.close();
+					}
+					for (AsyncHttpClient asyncClient : asyncClients) {
+						asyncClient.close();
+					}
 				}
+			});
 
-				// Capture the start time
-				long startTime = System.currentTimeMillis();
-
-				// Undertake the stress test
-				WoofBenchmarkShared.counter.set(0);
-				int overloadCount = doStressRequests(url, iterations, pipelineBatchSize, "iteration", asyncClients,
-						isMimicValidate);
-				WoofBenchmarkShared.assertCounter(clients * iterations * pipelineBatchSize,
-						"Incorrect number of stress run calls");
-
-				// Capture the completion time
-				long endTime = System.currentTimeMillis();
-
-				// Log the ending memory
-				logMemory();
-
-				// Indicate performance
-				int totalSuccessfulRequests = (clients * iterations * pipelineBatchSize) - overloadCount;
-				long totalTime = endTime - startTime;
-				int requestsPerSecond = (int) ((totalSuccessfulRequests) / (((float) totalTime) / 1000.0));
-				System.out.println("\tRequests: " + totalSuccessfulRequests + " (overload: " + overloadCount + ")");
-				System.out.println("\tTime: " + totalTime + " milliseconds");
-				System.out.println("\tReq/Sec: " + requestsPerSecond);
-				System.out.println();
-
-			} finally {
-				// Close the clients
-				for (AsyncHttpClient warmupClient : warmupClients) {
-					warmupClient.close();
-				}
-				for (AsyncHttpClient asyncClient : asyncClients) {
-					asyncClient.close();
-				}
+			// Complete if successful
+			if (isSuccessful[0]) {
+				return;
 			}
-		});
+		}
+
+		// As here, all attempts used. Propagate last failure
+		JUnitAgnosticAssert.fail(lastFailure[0]);
 	}
 
 	/**
