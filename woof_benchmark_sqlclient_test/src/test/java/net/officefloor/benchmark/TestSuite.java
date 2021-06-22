@@ -94,6 +94,11 @@ public class TestSuite {
 	}
 
 	public static class SqlClientFortunesTest extends FortunesTest {
+		
+		public SqlClientFortunesTest() {
+			super(true);
+		}
+		
 		@Before
 		public void start() throws Throwable {
 			TestSuite.start();

@@ -103,6 +103,11 @@ public class TestSuite {
 	}
 
 	public static class R2dbcFortunesTest extends FortunesTest {
+
+		public R2dbcFortunesTest() {
+			super(true);
+		}
+
 		@Before
 		public void start() throws Throwable {
 			TestSuite.start();
