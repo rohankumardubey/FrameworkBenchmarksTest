@@ -65,7 +65,7 @@ public class BenchmarkEnvironment {
 
 		// Create the tables
 		new SetupWorldTableRule(postgresqlRule).setupWorldTable();
-		FortunesTest.setupDatabase();
+		new SetupFortuneTableRule(postgresqlRule).setupFortuneTable();
 	}
 
 	/**
