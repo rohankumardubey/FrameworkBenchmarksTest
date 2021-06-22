@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * Tests.
  */
 @RunWith(Suite.class)
-@SuiteClasses({ JsonTest.class, DbTest.class, QueriesTest.class, FortunesTest.class, UpdateTest.class,
+@SuiteClasses({ JsonTest.class, DbTest.class, QueriesTest.class, CachedTest.class, FortunesTest.class, UpdateTest.class,
 		PlaintextTest.class })
 public class TestSuite {
 }

@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ TestSuite.UndertowJsonTest.class, TestSuite.UndertowDbTest.class, TestSuite.UndertowQueriesTest.class,
-		TestSuite.UndertowFortunesTest.class, TestSuite.UndertowUpdateTest.class,
+		TestSuite.UndertowCachedTest.class, TestSuite.UndertowFortunesTest.class, TestSuite.UndertowUpdateTest.class,
 		TestSuite.UndertowPlaintextTest.class })
 public class TestSuite {
 
@@ -47,6 +47,13 @@ public class TestSuite {
 	}
 
 	public static class UndertowQueriesTest extends QueriesTest {
+		@Override
+		protected String getServerName() {
+			return SERVER_NAME;
+		}
+	}
+
+	public static class UndertowCachedTest extends CachedTest {
 		@Override
 		protected String getServerName() {
 			return SERVER_NAME;

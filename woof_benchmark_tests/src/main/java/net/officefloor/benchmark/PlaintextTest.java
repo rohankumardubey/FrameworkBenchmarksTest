@@ -26,13 +26,15 @@ public class PlaintextTest {
 
 	public static final PostgreSqlRule dataSource = BenchmarkEnvironment.createPostgreSqlRule();
 
+	public static final SetupWorldTableRule setupWorldTable = new SetupWorldTableRule(dataSource);
+
 	public static final OfficeFloorRule server = new OfficeFloorRule();
 
 	public static final HttpClientRule client = new HttpClientRule();
 
 	@ClassRule
-	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource).around(server)
-			.around(client);
+	public static final RuleChain order = RuleChain.outerRule(systemProperties).around(dataSource)
+			.around(setupWorldTable).around(server).around(client);
 
 	protected String getServerName() {
 		return "O";

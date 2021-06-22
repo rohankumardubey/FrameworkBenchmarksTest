@@ -20,11 +20,11 @@ import net.officefloor.test.OfficeFloorRule;
 import net.officefloor.test.system.SystemPropertiesRule;
 
 /**
- * Tests multiple queries.
+ * Tests cached queries.
  */
-public class QueriesTest {
+public class CachedTest {
 
-	public static final String URL = "http://localhost:8181/queries?queries=";
+	public static final String URL = "http://localhost:8181/cached-worlds?count=";
 
 	public static final SystemPropertiesRule systemProperties = BenchmarkEnvironment.createSystemProperties();
 
