@@ -22,6 +22,7 @@
 		<module>woof_benchmark_thread_affinity_test</module>
 		<module>woof_benchmark_r2dbc_test</module>
 		<module>woof_benchmark_sqlclient_test</module>
+		<module>woof_benchmark_rawsqlclient_test</module>
 		<module>woof_benchmark_spring_test</module>
 		<module>woof_benchmark_netty_test</module>
 		<module>woof_benchmark_undertow_test</module>
@@ -94,6 +95,11 @@
 			<dependency>
 				<groupId>net.officefloor.benchmarks</groupId>
 				<artifactId>woof_benchmark_sqlclient</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.officefloor.benchmarks</groupId>
+				<artifactId>woof_benchmark_rawsqlclient</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
